@@ -29,23 +29,46 @@ void Mapping::updateMap(const lidar_t& scan, const pose_xyt_t& pose, OccupancyGr
     //float x = scan.thetas[1];
     //printf("%f\n",x);
 
-    float grid_size = .05; // 5cm
+    //const float grid_size = map.metersPerCell(); //.05; // 5cm
+    float Kp = 1;
+    float Kn = 3.5;
+
+    // float x_origin = map.originInGlobalFrame().x;
+    // float y_origin = map.originInGlobalFrame().y;
 
     float x0_m = pose.x; // in meters
     float y0_m = pose.y;
 
-    int x0 = to_grid(x0_m, grid_size); // in grid coordinates
-    int y0 = to_grid(y0_m, grid_size);
+    /*
+    int x0 = global_position_to_grid_cell(x0_m, grid_size); // - x_origin; // - map.global_o....; // in grid coordinates
+    int y0 = to_grid(y0_m, grid_size); // - y_origin;
+    */
+
+    Point<double> pose0 = Point<double>(x0_m, y0_m);
+    Point<int> p0 = global_position_to_grid_cell(pose0, map);
+    int x0 = p0.x;
+    int y0 = p0.y;
 
     // for each laser beam, use breshentham to update map
-    num_lasers = scan.num_ranges;
-    for (i=1; i<num_lasers; i++){
+    int num_lasers = scan.num_ranges;
+    for (int i=1; i<num_lasers; i++){
         float r = scan.ranges[i];
         float theta = scan.thetas[i];
         float x1_m = x0_m + r * cos(theta);
         float y1_m = y0_m + r * sin(theta);
-        int x1 = to_grid(x1_m, grid_size);
-        int y1 = to_grid(y1_m, grid_size);
+
+        Point<double> pose1 = Point<double>(x1_m,y1_m);
+        Point<int> p1 = global_position_to_grid_cell(pose1, map);
+        int x1 = p1.x;
+        int y1 = p1.y;
+
+
+        /*
+        int x1 = to_grid(x1_m, grid_size); // - x_origin;
+        int y1 = to_grid(y1_m, grid_size); // - y_origin;
+        */
+
+
 
         float dx = std::abs(x1-x0);
         float dy = std::abs(y1-y0);
@@ -54,27 +77,44 @@ void Mapping::updateMap(const lidar_t& scan, const pose_xyt_t& pose, OccupancyGr
         float err = dx-dy;
 
         // x,y starting points
-        float x = x0;
-        float y = y0;
+        int x = x0; // was float for some reason
+        int y = y0;
         // change x and y until hit one of end points
         while(x != x1 || y != y1){
-            updateOdds(x,y);
+            if (map.isCellInGrid(x,y)) {
+                //Update Odds at (x,y);
+                float prev_odds = map.logOdds(x,y);
+                // Clamp
+                if (prev_odds - Kn < -127) {
+                    map.setLogOdds(x,y,-127);
+                } else {
+                    map.setLogOdds(x,y,prev_odds - Kn);
+                }
+            }
             float e2 = 2*err;
             if (e2 >= -dy){
                 err -= dy;
                 x += sx;
             }
             if (e2 <= dx){
-                err += dx
-                y += sy
+                err += dx;
+                y += sy;
             }
         }
-
+        // Last one, we want to add
+        float prev_odds = map.logOdds(x1,y1);
+        if (prev_odds + Kp > 127) {
+            map.setLogOdds(x1,y1,127);
+        } else {
+            map.setLogOdds(x1,y1,prev_odds + Kp);
+        }
     }
 }
 
-int Mapping::to_grid(float x, float grid_size) {
-    return floor(x / grid_size);
+/*
+int Mapping::to_grid(float x, float metersPerCell){ // float grid_size) {
+    //return floor(x / grid_size);
+    return x * metersPerCell;
 }
+*/
 
-// Next time - updateOdds

@@ -20,7 +20,7 @@ OccupancyGrid::OccupancyGrid(float widthInMeters,
                              float heightInMeters,
                              float metersPerCell)
 : metersPerCell_(metersPerCell)
-, globalOrigin_(-widthInMeters/2.0f, -heightInMeters/2.0f)
+, globalOrigin_(-widthInMeters/2.0f, -heightInMeters/2.0f) // changed both from -
 {
     assert(widthInMeters  > 0.0f);
     assert(heightInMeters > 0.0f);
