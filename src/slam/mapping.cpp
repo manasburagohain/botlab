@@ -38,6 +38,7 @@ void Mapping::updateMap(const lidar_t& scan, const pose_xyt_t& pose, OccupancyGr
 
     float x0_m = pose.x; // in meters
     float y0_m = pose.y;
+    float body_theta = pose.theta;
 
     /*
     int x0 = global_position_to_grid_cell(x0_m, grid_size); // - x_origin; // - map.global_o....; // in grid coordinates
@@ -53,9 +54,9 @@ void Mapping::updateMap(const lidar_t& scan, const pose_xyt_t& pose, OccupancyGr
     int num_lasers = scan.num_ranges;
     for (int i=1; i<num_lasers; i++){
         float r = scan.ranges[i];
-        float theta = scan.thetas[i];
-        float x1_m = x0_m + r * cos(theta);
-        float y1_m = y0_m + r * sin(theta);
+        float laser_theta = scan.thetas[i];
+        float x1_m = x0_m + r * cos(laser_theta - body_theta); // subtracted out body angle 
+        float y1_m = y0_m + r * sin(laser_theta - body_theta);
 
         Point<double> pose1 = Point<double>(x1_m,y1_m);
         Point<int> p1 = global_position_to_grid_cell(pose1, map);
