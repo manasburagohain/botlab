@@ -52,7 +52,7 @@ public:
     * \return   New sample based on distribution from the motion model at the current update.
     */
     particle_t applyAction(const particle_t& sample);
-    
+    pose_xyt_t pre_odometry;
 private:
     
     ////////// TODO: Add private member variables needed for you implementation ///////////////////
@@ -72,7 +72,7 @@ private:
     float delta_trans_hat;
     float delta_rot2_hat;
 
-    pose_xyt_t pre_odometry;
+    
 };
 
 #endif // SLAM_ACTION_MODEL_HPP

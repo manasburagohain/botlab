@@ -19,8 +19,8 @@ ActionModel::ActionModel(void)
     pre_odometry.y = 0;
     pre_odometry.theta = 0;
 
-    p[3] = {0,0,0};
-    var[3] = {0.0, 0.0, 0.0};
+    //p[3] = [0,0,0];
+    //var[3] = [0.0, 0.0, 0.0];
 
     delta_rot1 = 0;
     delta_trans = 0;
@@ -68,11 +68,11 @@ particle_t ActionModel::applyAction(const particle_t& sample)
     delta_trans_hat = delta_trans - p[1];
     delta_rot2_hat = delta_rot2 - p[2];
 
-    sample.pose.x = sample.parent_pose.x + delta_trans_hat * cos(sample.parent_pose.theta + delta_rot1_hat);
-    sample.pose.y = sample.parent_pose.y + delta_trans_hat * sin(sample.parent_pose.theta + delta_rot1_hat);
-    sample.pose.theta = sample.parent_pose.theta + delta_rot1_hat + delta_rot2_hat;
+    //sample.pose.x = sample.parent_pose.x + delta_trans_hat * cos(sample.parent_pose.theta + delta_rot1_hat);
+    //sample.pose.y = sample.parent_pose.y + delta_trans_hat * sin(sample.parent_pose.theta + delta_rot1_hat);
+    //sample.pose.theta = sample.parent_pose.theta + delta_rot1_hat + delta_rot2_hat;
 
-    sample.parent_pose = sample.pose;
+    //sample.parent_pose = sample.pose;
 
     return sample;
 }
