@@ -56,6 +56,23 @@ public:
 private:
     
     ////////// TODO: Add private member variables needed for you implementation ///////////////////
+
+    float alpha1;
+    float alpha2;
+    float alpha3;
+    float alpha4;
+
+    float p[3];
+    float var[3];
+
+    float delta_rot1;
+    float delta_trans;
+    float delta_rot2;
+    float delta_rot1_hat;
+    float delta_trans_hat;
+    float delta_rot2_hat;
+
+    pose_xyt_t pre_odometry;
 };
 
 #endif // SLAM_ACTION_MODEL_HPP

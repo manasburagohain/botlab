@@ -9,12 +9,52 @@
 ActionModel::ActionModel(void)
 {
     //////////////// TODO: Handle any initialization for your ActionModel /////////////////////////
+
+    alpha1 = 1;
+    alpha2 = 1;
+    alpha3 = 1;
+    alpha4 = 1;
+
+    pre_odometry.x = 0;
+    pre_odometry.y = 0;
+    pre_odometry.theta = 0;
+
+    p[3] = {0,0,0};
+    var[3] = {0.0, 0.0, 0.0};
+
+    delta_rot1 = 0;
+    delta_trans = 0;
+    delta_rot2 = 0;
+    delta_rot1_hat = 0;
+    delta_trans_hat = 0;
+    delta_rot2_hat = 0;
 }
 
 
 bool ActionModel::updateAction(const pose_xyt_t& odometry)
 {
     ////////////// TODO: Implement code here to compute a new distribution of the motion of the robot ////////////////
+    delta_rot1 = atan2(odometry.y - pre_odometry.y, odometry.x - pre_odometry.x) - pre_odometry.theta;
+    delta_trans = sqrt((pre_odometry.x-odometry.x)*(pre_odometry.x-odometry.x) + (pre_odometry.y-odometry.y)*(pre_odometry.y-odometry.y));
+    delta_rot2 = odometry.theta - pre_odometry.theta - delta_rot1;
+
+    var[0] = alpha1*delta_rot1*delta_rot1 + alpha2*delta_trans*delta_trans;
+    var[1] = alpha3*delta_trans*delta_trans + alpha4*delta_rot1*delta_rot1 + alpha4*delta_rot2*delta_rot2;
+    var[2] = alpha1*delta_rot2*delta_rot2 + alpha2*delta_trans*delta_trans;
+
+    std::default_random_engine generator;
+    std::normal_distribution<float> p0(0.0,var[0]);
+    std::normal_distribution<float> p1(0.0,var[1]);
+    std::normal_distribution<float> p2(0.0,var[2]);
+
+    p[0] = p0(generator);
+    p[1] = p1(generator);
+    p[2] = p2(generator);
+
+    pre_odometry.x = odometry.x;
+    pre_odometry.y = odometry.y;
+    pre_odometry.theta = odometry.theta;
+
     return false;
 }
 
@@ -23,6 +63,16 @@ particle_t ActionModel::applyAction(const particle_t& sample)
 {
     ////////////// TODO: Implement your code for sampling new poses from the distribution computed in updateAction //////////////////////
     // Make sure you create a new valid particle_t. Don't forget to set the new time and new parent_pose.
+
+    delta_rot1_hat = delta_rot1 - p[0];
+    delta_trans_hat = delta_trans - p[1];
+    delta_rot2_hat = delta_rot2 - p[2];
+
+    sample.pose.x = sample.parent_pose.x + delta_trans_hat * cos(sample.parent_pose.theta + delta_rot1_hat);
+    sample.pose.y = sample.parent_pose.y + delta_trans_hat * sin(sample.parent_pose.theta + delta_rot1_hat);
+    sample.pose.theta = sample.parent_pose.theta + delta_rot1_hat + delta_rot2_hat;
+
+    sample.parent_pose = sample.pose;
 
     return sample;
 }
