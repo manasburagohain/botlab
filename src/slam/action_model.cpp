@@ -10,7 +10,7 @@ ActionModel::ActionModel(void)
 {
     //////////////// TODO: Handle any initialization for your ActionModel /////////////////////////
 
-    alpha1 = 1;
+    alpha1 = 1; //.001;//.05; // were all .001
     alpha2 = 1;
     alpha3 = 1;
     alpha4 = 1;
@@ -40,6 +40,7 @@ bool ActionModel::updateAction(const pose_xyt_t& odometry)
     ////////////// TODO: Implement code here to compute a new distribution of the motion of the robot ////////////////
     delta_rot1 = atan2(odometry.y - pre_odometry.y, odometry.x - pre_odometry.x) - pre_odometry.theta;
     delta_trans = sqrt((pre_odometry.x-odometry.x)*(pre_odometry.x-odometry.x) + (pre_odometry.y-odometry.y)*(pre_odometry.y-odometry.y));
+    //delta_trans *= 10; // testing grid theory
     delta_rot2 = odometry.theta - pre_odometry.theta - delta_rot1;
 
     var[0] = alpha1*delta_rot1*delta_rot1 + alpha2*delta_trans*delta_trans;
@@ -51,14 +52,29 @@ bool ActionModel::updateAction(const pose_xyt_t& odometry)
     std::normal_distribution<float> p1(0.0,var[1]);
     std::normal_distribution<float> p2(0.0,var[2]);
 
+
     p[0] = p0(generator);
     p[1] = p1(generator);
     p[2] = p2(generator);
 
+
+
+    //return false;
+    // check if previous odometry is close to new odometry
+    float epsilon = .0001;
+    float x_dist = (odometry.x - pre_odometry.x)*(odometry.x - pre_odometry.x);
+    float y_dist = (odometry.y - pre_odometry.y)*(odometry.y - pre_odometry.y);
+    float theta_dist = (odometry.theta - pre_odometry.theta)*(odometry.theta - pre_odometry.theta);
+    float distance = sqrt( x_dist + y_dist + theta_dist );
+
+    // set previous odometry values to current odometry values
     pre_odometry.x = odometry.x;
     pre_odometry.y = odometry.y;
     pre_odometry.theta = odometry.theta;
 
+    if (distance > epsilon) {
+        return true;
+    }
     return false;
 }
 
@@ -77,6 +93,9 @@ particle_t ActionModel::applyAction(const particle_t& sample)
     new_sample.pose.theta = sample.parent_pose.theta + delta_rot1_hat + delta_rot2_hat;
 
     new_sample.parent_pose = sample.pose;
+
+    //printf("Prev X: %f\n", sample.parent_pose.x);
+    //printf("New X: %f\n", new_sample.pose.x);
 
     return new_sample;
 }

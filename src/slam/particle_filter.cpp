@@ -6,6 +6,8 @@
 #include <time.h>
 #include <math.h>
 
+#include <common/grid_utils.hpp>
+
 ParticleFilter::ParticleFilter(int numParticles)
 : kNumParticles_ (numParticles)
 {
@@ -37,9 +39,18 @@ void ParticleFilter::initializeFilterAtPose(const pose_xyt_t& pose)
 
     //for i in kNumParticles, initialize particle to start pose // no need to adjust by epsilon, done in action model
     for (int i = 0; i < kNumParticles_; i++) {
-        //set particle poseto initial pose
+
+        /*
+        Point<double> pose_m = Point<double>(posterior_[i].pose.x,posterior_[i].pose.y);
+        Point<int> pose_grid = global_position_to_grid_cell(pose_m, map);
+        */
+
+        //set particle pose to initial pose
         posterior_[i].pose = pose;
+        posterior_[i].weight = 1.0 / kNumParticles_;
     }
+
+    printf("Initialized particle filter to pose\n");
 
 }
 
@@ -48,16 +59,24 @@ pose_xyt_t ParticleFilter::updateFilter(const pose_xyt_t&      odometry,
                                         const lidar_t& laser,
                                         const OccupancyGrid&   map)
 {
+    printf("Made it into update filter\n");
     // Only update the particles if motion was detected. If the robot didn't move, then
     // obviously don't do anything.
     bool hasRobotMoved = actionModel_.updateAction(odometry);
     
+    printf("Updated action model if robot moved\n");
+
     if(hasRobotMoved)
     {
+        printf("checked if robot has moved\n");
         auto prior = resamplePosteriorDistribution(); // this just resamples. done
+        printf("Resampled\n");
         auto proposal = computeProposalDistribution(prior); // this applies action model. done.
+        printf("computed proposal\n");
         posterior_ = computeNormalizedPosterior(proposal, laser, map); // this uses likelihood sensor model and normalizes. 
+        printf("computed posterior\n");
         posteriorPose_ = estimatePosteriorPose(posterior_); // from all samples and weights, get pose estimate
+        printf("estimated new pose\n");
     }
     
     posteriorPose_.utime = odometry.utime;
@@ -91,15 +110,20 @@ std::vector<particle_t> ParticleFilter::resamplePosteriorDistribution(void)
     // Low variance resampling
     int M = kNumParticles_;
     double r = my_rand(0,1/M);
-    float c = prior[0].weight;
+    double c = prior[0].weight;
     int i = 0; // is 1 in notes
 
     for (int m = 0; m < M; m++ ) {
-        float U = r + m * (1.0/M);
+        double U = r + m * (1.0/M);
+        //printf("U: %f", U);
+        //printf("c: %f", c);
         while (U > c) {
             i++;
+            //printf("%d\n",i);
             c += prior[i].weight;
+            //printf("C: %f", c);
         }
+        printf("%d\n",i);
         new_particles.push_back(prior[i]);
     }
 
@@ -131,19 +155,22 @@ std::vector<particle_t> ParticleFilter::computeNormalizedPosterior(const std::ve
     std::vector<particle_t> posterior;
 
     // Get weights
-    double weight_sum = 0;
+    double weight_sum = 0.0;
+    double epsilon = .000001;
     for (auto particle : proposal) {
-        double w = sensorModel_.likelihood(particle, laser, map);
+        //double w = sensorModel_.likelihood(particle, laser, map);
+        double w = 1;
+        if (w < epsilon) w = epsilon;
+        printf("Likelihood: %f\n", w);
         particle.weight = w;
         weight_sum += w;
         posterior.push_back(particle);
     }
 
-    weight_sum /= kNumParticles_;
-
     // Normalize weights
     for (int i = 0; i < kNumParticles_; i++) {
-        posterior[i].weight /= weight_sum;
+        posterior[i].weight = posterior[i].weight / weight_sum;
+        printf("Particle x: %f", posterior_[i].pose.x );
     }
 
     return posterior;

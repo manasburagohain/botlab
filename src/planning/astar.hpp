@@ -3,7 +3,10 @@
 
 #include <lcmtypes/robot_path_t.hpp>
 #include <lcmtypes/pose_xyt_t.hpp>
+#include <math.h>
 
+#define XGRID 1000
+#define YGRID 1000
 class ObstacleDistanceGrid;
 
 /**
@@ -23,6 +26,63 @@ struct SearchParams
                                     ///< for cellDistance > minDistanceToObstacle && cellDistance < maxDistanceWithCost
 };
 
+struct Node
+{
+    int y;
+    int x;
+    int parentX;
+    int parentY;
+    float gCost;
+    float hCost;
+    float oCost; 
+    float fCost;
+};
+
+inline bool operator < (const Node& lhs, const Node& rhs)
+{//We need to overload "<" to put our struct into a set
+    return lhs.fCost < rhs.fCost;
+}
+
+static bool isValid(int x, int y, const ObstacleDistanceGrid& distances, double minDist) { //If our Node is an obstacle it is not valid
+    /*
+    if (distances[x][y] < minDist) {
+        if (x < 0 || y < 0 || x >= (XGRID) || y >= (YGRID)) {
+            return false;
+        }
+        return true;
+    } 
+    return false;
+    */
+   return false;
+}
+
+static bool isDestination(int x, int y, Node dest) {
+    if (x == dest.x && y == dest.y) {
+        return true;
+    }
+    return false;
+}
+
+static double calculateH(int x, int y, Node dest) {
+    double H = (sqrt((x - dest.x)*(x - dest.x)
+        + (y - dest.y)*(y - dest.y)));
+    return H;
+}
+
+static double calculateO(int x, int y, const ObstacleDistanceGrid& distances, const SearchParams& params) 
+{
+    /*
+    int dist = distances[x][y];
+    if (dist >= params.maxDistanceWithCost)    return 0;
+    else
+    {
+        ///<   pow(maxDistanceWithCost - cellDistance, distanceCostExponent)
+        ///< for cellDistance > minDistanceToObstacle && cellDistance < maxDistanceWithCost
+        return    pow(params.maxDistanceWithCost - dist, params.distanceCostExponent);
+    }
+    */
+    return 0.0;
+}
 
 /**
 * search_for_path uses an A* search to find a path from the start to goal poses. The search assumes a circular robot
