@@ -5,8 +5,6 @@
 #include <lcmtypes/pose_xyt_t.hpp>
 #include <math.h>
 
-#define XGRID 1000
-#define YGRID 1000
 class ObstacleDistanceGrid;
 
 /**
@@ -38,51 +36,46 @@ struct Node
     float fCost;
 };
 
-inline bool operator < (const Node& lhs, const Node& rhs)
-{//We need to overload "<" to put our struct into a set
-    return lhs.fCost < rhs.fCost;
-}
+inline bool operator < (const Node& lhs, const Node& rhs);
+static bool isValid(int x, int y, const ObstacleDistanceGrid& distances, double minDist);
+static bool isDestination(int x, int y, Node dest);
+static double calculateH(int x, int y, Node dest);
+static double calculateO(int x, int y, const ObstacleDistanceGrid& distances, const SearchParams& params);
 
-static bool isValid(int x, int y, const ObstacleDistanceGrid& distances, double minDist) { //If our Node is an obstacle it is not valid
-    /*
-    if (distances[x][y] < minDist) {
-        if (x < 0 || y < 0 || x >= (XGRID) || y >= (YGRID)) {
-            return false;
-        }
-        return true;
-    } 
-    return false;
-    */
-   return false;
-}
-
-static bool isDestination(int x, int y, Node dest) {
-    if (x == dest.x && y == dest.y) {
-        return true;
-    }
-    return false;
-}
-
-static double calculateH(int x, int y, Node dest) {
-    double H = (sqrt((x - dest.x)*(x - dest.x)
-        + (y - dest.y)*(y - dest.y)));
-    return H;
-}
-
-static double calculateO(int x, int y, const ObstacleDistanceGrid& distances, const SearchParams& params) 
+/*
+static robot_path_t makePath(array<array < Node, (distances.heightInCells())>, distances.widthInCells()> map, Node dest, const ObstacleDistanceGrid& distances)
 {
-    /*
-    int dist = distances[x][y];
-    if (dist >= params.maxDistanceWithCost)    return 0;
-    else
+    cout << "Found a Path" << endl;
+    int x = dest.x;
+    int y = dest.y;
+    stack<pose_xyt_t> path;
+    robot_path_t usablePath;
+
+    while (!(map[x][y].parentX==x && map[x][y]==y) && map[x][y].x != -1 && map[x][y] != -1)
     {
-        ///<   pow(maxDistanceWithCost - cellDistance, distanceCostExponent)
-        ///< for cellDistance > minDistanceToObstacle && cellDistance < maxDistanceWithCost
-        return    pow(params.maxDistanceWithCost - dist, params.distanceCostExponent);
+        pose_xyt_t node;
+        node.x = (map[x][y].x - distances.originInGlobalFrame().x) * distances.meterPerCell();
+        node.y = (map[x][y].y - distances.originInGlobalFrame().y) * distances.meterPerCell();
+        path.push(node);
+        int tempX = map[x][y].parentX;
+        int tempY = map[x][y].parentY;
+        x = tempX;
+        y = tempY;
     }
-    */
-    return 0.0;
+    pose_xyt_t node;
+    node.x = (map[x][y].x - distances.originInGlobalFrame().x) * distances.meterPerCell();
+    node.y = (map[x][y].y - distances.originInGlobalFrame().y) * distances.meterPerCell();
+    path.push(node);
+
+    while (!path.empty())
+    {
+        pose_xyt_t top = path.top();
+        path.pop();
+        usablePath.path.emplace_back(top);
+    }
+    return usablePath;
 }
+*/
 
 /**
 * search_for_path uses an A* search to find a path from the start to goal poses. The search assumes a circular robot
