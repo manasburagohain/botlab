@@ -14,54 +14,57 @@ robot_path_t search_for_path(pose_xyt_t start,
 
     ////////////////// TODO: Implement your A* search here //////////////////////////
     Node startnode, dest;
-    
+    printf("\n%f,%f\n%f,%f\n",start.x,start.y,goal.x,goal.y);
+	printf("%f,%f\n",distances.originInGlobalFrame().x,distances.originInGlobalFrame().y);
 	robot_path_t path;
     path.utime = start.utime;
-    //path.path.push_back(start);    
-
+    path.path.push_back(start);    
     //convert to grid cell
-    dest.x = (int)goal.x * distances.cellsPerMeter() + distances.originInGlobalFrame().x;
-    dest.y = (int)goal.y * distances.cellsPerMeter() + distances.originInGlobalFrame().y;
-    startnode.x = (int)start.x * distances.cellsPerMeter() + distances.originInGlobalFrame().x;
-    startnode.y = (int)start.y * distances.cellsPerMeter() + distances.originInGlobalFrame().y;
+    dest.x = (int)((goal.x - distances.originInGlobalFrame().x) * distances.cellsPerMeter()) + 1;
+    dest.y = (int)((goal.y - distances.originInGlobalFrame().y) * distances.cellsPerMeter()) + 1;
+    startnode.x = ((int)(start.x - distances.originInGlobalFrame().x) * distances.cellsPerMeter()) + 1;
+    startnode.y = ((int)(start.y - distances.originInGlobalFrame().y) * distances.cellsPerMeter()) + 1;
     if (!isValid(dest.x, dest.y, distances, params.minDistanceToObstacle))
     {
-        printf("Destination is cannot be reached");
-        return path;
+		printf("4\n");
+	    printf("Destination is cannot be reached");
+		path.path_length = path.path.size();
+		return path;
     }    
-
-    if(isDestination(startnode.x, startnode.y, dest))
+	if(isDestination(startnode.x, startnode.y, dest))
     {
         printf("Already at Destination");
 		path.path_length = path.path.size();
         return path;
     }
-
-    bool closedList[distances.widthInCells()][distances.heightInCells()];
-    vector< vector<Node>> allMap;
+	bool closedList[distances.widthInCells()][distances.heightInCells()];
+    
+	vector< vector<Node>> allMap;
     for (int x = 0; x < (distances.widthInCells()); x++) 
     {
-			for (int y = 0; y < (distances.heightInCells()); y++) {
-				allMap[x][y].fCost = FLT_MAX;
-				allMap[x][y].gCost = FLT_MAX;
-				allMap[x][y].hCost = FLT_MAX;
-				allMap[x][y].parentX = -1;
-				allMap[x][y].parentY = -1;
-				allMap[x][y].x = x;
-				allMap[x][y].y = y;
-
-				closedList[x][y] = false;
-			}
+		vector<Node> suptemp;
+		for (int y = 0; y < (distances.heightInCells()); y++) {
+			Node temp;
+			temp.fCost = FLT_MAX;
+			temp.gCost = FLT_MAX;
+			temp.hCost = FLT_MAX;
+			temp.parentX = -1;
+			temp.parentY = -1;
+			temp.x = x;
+			temp.y = y;
+			suptemp.push_back(temp);
+			closedList[x][y] = false;
 		}
-    
+		allMap.push_back(suptemp);
+		}
     int x = startnode.x;
 	int y = startnode.y;
+	printf("X:%d,Y:%d\n",x,y);
 	allMap[x][y].fCost = 0.0;
 	allMap[x][y].gCost = 0.0;
 	allMap[x][y].hCost = 0.0;
 	allMap[x][y].parentX = x;
 	allMap[x][y].parentY = y;
-    
     vector<Node> openList;	
 	openList.emplace_back(allMap[x][y]);
 	bool destinationFound = false;
@@ -133,8 +136,8 @@ robot_path_t search_for_path(pose_xyt_t start,
 							while (!(allMap[x][y].parentX==x && allMap[x][y].parentY==y) && allMap[x][y].x != -1 && allMap[x][y].y != -1)
 							{
 								pose_xyt_t tempnode;
-								tempnode.x = (allMap[x][y].x - distances.originInGlobalFrame().x) * distances.metersPerCell();
-								tempnode.y = (allMap[x][y].y - distances.originInGlobalFrame().y) * distances.metersPerCell();
+								tempnode.x = (allMap[x][y].x - 1) * distances.metersPerCell() + distances.originInGlobalFrame().x;
+								tempnode.y = (allMap[x][y].y - 1) * distances.metersPerCell() + distances.originInGlobalFrame().y;
 								path.push(tempnode);
 								int tempX = allMap[x][y].parentX;
 								int tempY = allMap[x][y].parentY;
@@ -142,8 +145,8 @@ robot_path_t search_for_path(pose_xyt_t start,
 								y = tempY;
 							}
 							pose_xyt_t node;
-							node.x = (allMap[x][y].x - distances.originInGlobalFrame().x) * distances.metersPerCell();
-							node.y = (allMap[x][y].y - distances.originInGlobalFrame().y) * distances.metersPerCell();
+							node.x = (allMap[x][y].x - 1) * distances.metersPerCell() + distances.originInGlobalFrame().x;
+							node.y = (allMap[x][y].y - 1) * distances.metersPerCell() + distances.originInGlobalFrame().y;
 							path.push(node);
 
 							while (!path.empty())
@@ -153,6 +156,8 @@ robot_path_t search_for_path(pose_xyt_t start,
 								usablePath.path.emplace_back(top);
 							}
 							usablePath.path_length = usablePath.path.size();
+							//for(int i = 0 ; i<usablePath.path_length; i++)
+						//		printf("X: %f, Y: %f\n", usablePath.path[i].x, usablePath.path[i].y);
 							return usablePath;
 
 
@@ -184,6 +189,7 @@ robot_path_t search_for_path(pose_xyt_t start,
 	if (destinationFound == false) 
 	{
 		cout << "Destination not found" << endl;
+		path.path_length = path.path.size();
 		return path;
 	}
 
@@ -198,7 +204,8 @@ inline bool operator < (const Node& lhs, const Node& rhs)
 
 static bool isValid(int x, int y, const ObstacleDistanceGrid& distances, double minDist) 
 { //If our Node is an obstacle it is not valid
-    if (distances.operator()(x,y) >= minDist) {
+	if (distances.operator()(x,y) >= minDist) 
+	{
         if (x < 0 || y < 0 || x >= (distances.widthInCells()) || y >= (distances.heightInCells())) {
             return false;
         }
