@@ -73,6 +73,16 @@ private:
     float delta_trans_hat;
     float delta_rot2_hat;
 
+    std::default_random_engine generator;
+    float delta_x;
+    float delta_y;
+    float delta_theta;
+
+    //std::normal_distribution<float> p0;
+    //std::normal_distribution<float> p1;
+    //std::normal_distribution<float> p2;
+
+
     
 };
 

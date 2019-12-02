@@ -28,6 +28,8 @@ double SensorModel::likelihood(const particle_t& sample, const lidar_t& scan, co
     int y0 = p0.y;
     */
 
+   
+
     int num_lasers = scan.num_ranges;
     for (int i=1; i<num_lasers; i+=stride ){
         float r = scan.ranges[i];
@@ -41,19 +43,25 @@ double SensorModel::likelihood(const particle_t& sample, const lidar_t& scan, co
         int y1 = p1.y;
 
         // Check if final grid position is obstacle
-        if (map.logOdds(x1,y1) > 0) {
-            odds += map.logOdds(x1,y1);
-        } else {
+        if (map.logOdds(x1,y1) > 70) {
+            odds += map.logOdds(x1,y1) + 127;
+        } 
+        
+        //
+        //else {
             // worry about nearby hits
             double nearby_odds = 0;
             for (int i=-1;i<=1;i++) {
                 for (int j=-1;j<=1;j++) {
-                    nearby_odds += map.logOdds(x1+i,y1+j);
+                    if (map.logOdds(x1+i,y1+j) > 70) {
+                        nearby_odds += map.logOdds(x1+i,y1+j) + 127;
+                    }
                 }
             }
-            nearby_odds *= (1.0/8/2);
-            odds += nearby_odds;
-        }
+            nearby_odds *= (1.0/8/2); // was 2
+            odds += nearby_odds; // shift all values by 127
+        //}
+        //
 
     }
 

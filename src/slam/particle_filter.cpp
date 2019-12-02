@@ -48,6 +48,7 @@ void ParticleFilter::initializeFilterAtPose(const pose_xyt_t& pose)
         //set particle pose to initial pose
         posterior_[i].pose = pose;
         posterior_[i].weight = 1.0 / kNumParticles_;
+        posterior_[i].parent_pose = pose;
     }
 
     printf("Initialized particle filter to pose\n");
@@ -70,10 +71,20 @@ pose_xyt_t ParticleFilter::updateFilter(const pose_xyt_t&      odometry,
     {
         printf("checked if robot has moved\n");
         auto prior = resamplePosteriorDistribution(); // this just resamples. done
-        printf("Resampled\n");
+    
         auto proposal = computeProposalDistribution(prior); // this applies action model. done.
+        //
+        for (auto p : proposal) {
+            printf("proposal w:%f\n", p.weight);
+        }
+        //
         printf("computed proposal\n");
-        posterior_ = computeNormalizedPosterior(proposal, laser, map); // this uses likelihood sensor model and normalizes. 
+        posterior_ = computeNormalizedPosterior(proposal, laser, map); // this uses likelihood sensor model and normalizes.
+        /*
+        for (auto p : posterior_) {
+            printf("posterior w:%f\n", p.weight);
+        } 
+        */
         printf("computed posterior\n");
         posteriorPose_ = estimatePosteriorPose(posterior_); // from all samples and weights, get pose estimate
         printf("estimated new pose\n");
@@ -115,15 +126,13 @@ std::vector<particle_t> ParticleFilter::resamplePosteriorDistribution(void)
 
     for (int m = 0; m < M; m++ ) {
         double U = r + m * (1.0/M);
-        //printf("U: %f", U);
-        //printf("c: %f", c);
         while (U > c) {
             i++;
-            //printf("%d\n",i);
+
             c += prior[i].weight;
-            //printf("C: %f", c);
+
         }
-        printf("%d\n",i);
+
         new_particles.push_back(prior[i]);
     }
 
@@ -158,19 +167,21 @@ std::vector<particle_t> ParticleFilter::computeNormalizedPosterior(const std::ve
     double weight_sum = 0.0;
     double epsilon = .000001;
     for (auto particle : proposal) {
-        //double w = sensorModel_.likelihood(particle, laser, map);
-        double w = 1;
+        double w = sensorModel_.likelihood(particle, laser, map);
+        //double w = 1;
         if (w < epsilon) w = epsilon;
-        printf("Likelihood: %f\n", w);
         particle.weight = w;
         weight_sum += w;
         posterior.push_back(particle);
     }
 
+    //printf("Weight sum: %f\n", weight_sum);
+
     // Normalize weights
     for (int i = 0; i < kNumParticles_; i++) {
         posterior[i].weight = posterior[i].weight / weight_sum;
-        printf("Particle x: %f", posterior_[i].pose.x );
+        //printf("Likelihood: %f\n", posterior[i].weight);
+        //printf("Particle x: %f", posterior_[i].pose.x );
     }
 
     return posterior;
