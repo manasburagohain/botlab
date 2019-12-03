@@ -73,18 +73,18 @@ pose_xyt_t ParticleFilter::updateFilter(const pose_xyt_t&      odometry,
         auto prior = resamplePosteriorDistribution(); // this just resamples. done
     
         auto proposal = computeProposalDistribution(prior); // this applies action model. done.
-        //
+        /*
         for (auto p : proposal) {
             printf("proposal w:%f\n", p.weight);
         }
-        //
+        */
         printf("computed proposal\n");
         posterior_ = computeNormalizedPosterior(proposal, laser, map); // this uses likelihood sensor model and normalizes.
-        /*
+        //
         for (auto p : posterior_) {
             printf("posterior w:%f\n", p.weight);
         } 
-        */
+        //
         printf("computed posterior\n");
         posteriorPose_ = estimatePosteriorPose(posterior_); // from all samples and weights, get pose estimate
         printf("estimated new pose\n");
@@ -118,11 +118,30 @@ std::vector<particle_t> ParticleFilter::resamplePosteriorDistribution(void)
     std::vector<particle_t> prior = posterior_;
     std::vector<particle_t> new_particles;
 
+    //particle_t best_particle;
+    /* set all to best weight for lulz
+    double max_weight = 0;
+    for (auto p : prior) {
+        double w = p.weight;
+        if (w > max_weight) {
+            max_weight = w;
+            best_particle = p;
+        }
+    }
+
+    for (int i = 1; i < kNumParticles_; i++) {
+        new_particles.push_back(best_particle);
+    }
+    */
+
+    //
     // Low variance resampling
     int M = kNumParticles_;
-    double r = my_rand(0,1/M);
+    double r = my_rand(0,1.0/M);
     double c = prior[0].weight;
     int i = 0; // is 1 in notes
+
+    printf("\n\n\nR: %f\n\n\n", r);
 
     for (int m = 0; m < M; m++ ) {
         double U = r + m * (1.0/M);
@@ -135,6 +154,7 @@ std::vector<particle_t> ParticleFilter::resamplePosteriorDistribution(void)
 
         new_particles.push_back(prior[i]);
     }
+    //
 
     return new_particles;
 }
@@ -192,23 +212,36 @@ pose_xyt_t ParticleFilter::estimatePosteriorPose(const std::vector<particle_t>& 
 {
     //////// TODO: Implement your method for computing the final pose estimate based on the posterior distribution
     pose_xyt_t pose;
-
+    //
     double x_sum = 0;
     double y_sum = 0;
     double sin_sum = 0;
     double cos_sum = 0;
+    //
+
+    //double max_weight = 0;
 
     for (auto particle : posterior) {
         double w = particle.weight;
+        /*
+        if (w > max_weight) {
+            max_weight = w;
+            pose = particle.pose;
+        }
+        */
+        //
         x_sum += w * particle.pose.x;
         y_sum += w * particle.pose.y;
         sin_sum += w * sin(particle.pose.theta);
         cos_sum += w * cos(particle.pose.theta);
+        //
     }
 
+    //
     pose.x = x_sum;
     pose.y = y_sum;
     pose.theta = atan2(sin_sum, cos_sum);
+    //
 
     return pose;
 }

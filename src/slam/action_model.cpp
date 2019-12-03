@@ -11,10 +11,10 @@ ActionModel::ActionModel(void)
 {
     //////////////// TODO: Handle any initialization for your ActionModel /////////////////////////
 
-    alpha1 = 0.0; //.001;//.05; // were all .001
-    alpha2 = 0.0;
-    alpha3 = 0.0;
-    alpha4 = 0.0;
+    alpha1 = .01; // 0.015; //.001;//.05; // were all .001
+    alpha2 = .01; //0.015;
+    alpha3 = .01; //0.015;
+    alpha4 = .01; //0.015;
 
     pre_odometry.x = 0;
     pre_odometry.y = 0;
@@ -50,7 +50,7 @@ bool ActionModel::updateAction(const pose_xyt_t& odometry)
     delta_y = odometry.y - pre_odometry.y;
     delta_theta = odometry.theta - pre_odometry.theta;
 
-    /*    
+    /*   
     delta_rot1 = atan2(odometry.y - pre_odometry.y, odometry.x - pre_odometry.x) - pre_odometry.theta;
     delta_trans = sqrt((pre_odometry.x-odometry.x)*(pre_odometry.x-odometry.x) + (pre_odometry.y-odometry.y)*(pre_odometry.y-odometry.y));
     delta_rot2 = odometry.theta - pre_odometry.theta - delta_rot1;
@@ -61,27 +61,12 @@ bool ActionModel::updateAction(const pose_xyt_t& odometry)
     */
 
     //
-    var[0] = .5;
-    var[1] = .5;
-    var[2] = .5;
+    var[0] = .1;
+    var[1] = .1;
+    var[2] = .1;
     //
 
 
-    /*
-    std::default_random_engine generator;
-    std::normal_distribution<float> p0(0.0,var[0]);
-    std::normal_distribution<float> p1(0.0,var[1]);
-    std::normal_distribution<float> p2(0.0,var[2]);
-    */
-
-    /*
-    p[0] = p0(generator);
-    p[1] = p1(generator);
-    p[2] = p2(generator);
-    */
-
-
-    //return false;
     // check if previous odometry is close to new odometry
     float epsilon = .000001; // made this 100 times smaller
     float x_dist = (odometry.x - pre_odometry.x)*(odometry.x - pre_odometry.x);
@@ -109,9 +94,6 @@ particle_t ActionModel::applyAction(const particle_t& sample)
     ////////////// TODO: Implement your code for sampling new poses from the distribution computed in updateAction //////////////////////
     // Make sure you create a new valid particle_t. Don't forget to set the new time and new parent_pose.
 
-    /*
-    std::default_random_engine generator;
-    */
     std::normal_distribution<float> p0(0.0,var[0]);
     std::normal_distribution<float> p1(0.0,var[1]);
     std::normal_distribution<float> p2(0.0,var[2]);
@@ -130,9 +112,9 @@ particle_t ActionModel::applyAction(const particle_t& sample)
     delta_trans_hat = delta_trans - p[1];
     delta_rot2_hat = delta_rot2 - p[2];
 
-    new_sample.pose.x = sample.parent_pose.x + delta_trans_hat * cos(sample.parent_pose.theta + delta_rot1_hat);
-    new_sample.pose.y = sample.parent_pose.y + delta_trans_hat * sin(sample.parent_pose.theta + delta_rot1_hat); // thought this might be minus
-    new_sample.pose.theta = sample.parent_pose.theta + delta_rot1_hat + delta_rot2_hat;
+    new_sample.pose.x = sample.pose.x + delta_trans_hat * cos(sample.pose.theta + delta_rot1_hat); // changed all parent pose to pose
+    new_sample.pose.y = sample.pose.y + delta_trans_hat * sin(sample.pose.theta + delta_rot1_hat); // thought this might be minus
+    new_sample.pose.theta = sample.pose.theta + delta_rot1_hat + delta_rot2_hat;
     */
 
 
@@ -143,9 +125,9 @@ particle_t ActionModel::applyAction(const particle_t& sample)
     */
 
     //
-    new_sample.pose.x = pre_odometry.x + delta_x + p[0];
-    new_sample.pose.y = pre_odometry.y + delta_y + p[1];
-    new_sample.pose.theta = pre_odometry.theta + delta_theta; // + p[2];
+    new_sample.pose.x = sample.pose.x + delta_x + p[0]; // these were all pre_odometry // might try pose next
+    new_sample.pose.y = sample.pose.y + delta_y + p[1];
+    new_sample.pose.theta = sample.pose.theta + delta_theta + p[2];
     //
 
     new_sample.parent_pose = sample.pose;
