@@ -10,7 +10,6 @@
 ActionModel::ActionModel(void)
 {
     //////////////// TODO: Handle any initialization for your ActionModel /////////////////////////
-
     alpha1 = .01; // 0.015; //.001;//.05; // were all .001
     alpha2 = .01; //0.015;
     alpha3 = .01; //0.015;
@@ -61,9 +60,9 @@ bool ActionModel::updateAction(const pose_xyt_t& odometry)
     */
 
     //
-    var[0] = .1;
-    var[1] = .1;
-    var[2] = .1;
+    var[0] = .05; // .1 WORKS FOR LOCALIZATION ONLY
+    var[1] = .05;
+    var[2] = .05;
     //
 
 

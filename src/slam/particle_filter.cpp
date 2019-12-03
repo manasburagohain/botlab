@@ -33,6 +33,8 @@ double ParticleFilter::my_rand(double min, double max) {
     return distribution(generator);
 }
 
+
+
 void ParticleFilter::initializeFilterAtPose(const pose_xyt_t& pose)
 {
     ///////////// TODO: Implement your method for initializing the particles in the particle filter /////////////////
@@ -52,7 +54,7 @@ void ParticleFilter::initializeFilterAtPose(const pose_xyt_t& pose)
     }
 
     printf("Initialized particle filter to pose\n");
-
+    // to-do try printing pose for next time
 }
 
 
@@ -80,11 +82,11 @@ pose_xyt_t ParticleFilter::updateFilter(const pose_xyt_t&      odometry,
         */
         printf("computed proposal\n");
         posterior_ = computeNormalizedPosterior(proposal, laser, map); // this uses likelihood sensor model and normalizes.
-        //
+        /*
         for (auto p : posterior_) {
             printf("posterior w:%f\n", p.weight);
         } 
-        //
+        */
         printf("computed posterior\n");
         posteriorPose_ = estimatePosteriorPose(posterior_); // from all samples and weights, get pose estimate
         printf("estimated new pose\n");
@@ -140,8 +142,6 @@ std::vector<particle_t> ParticleFilter::resamplePosteriorDistribution(void)
     double r = my_rand(0,1.0/M);
     double c = prior[0].weight;
     int i = 0; // is 1 in notes
-
-    printf("\n\n\nR: %f\n\n\n", r);
 
     for (int m = 0; m < M; m++ ) {
         double U = r + m * (1.0/M);

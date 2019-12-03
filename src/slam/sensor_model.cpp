@@ -14,7 +14,7 @@ SensorModel::SensorModel(void)
 double SensorModel::likelihood(const particle_t& sample, const lidar_t& scan, const OccupancyGrid& map)
 {
     ///////////// TODO: Implement your sensor model for calculating the likelihood of a particle given a laser scan //////////
-    int stride = 1; // can change this to optimize speed
+    int stride = 6; // can change this to optimize speed
     double odds = 0;
 
     float x0_m = sample.pose.x; // in meters
@@ -44,7 +44,7 @@ double SensorModel::likelihood(const particle_t& sample, const lidar_t& scan, co
         int y1 = p1.y;
 
         // Check if final grid position is obstacle
-        if (map.logOdds(x1,y1) > 30) {
+        if (map.logOdds(x1,y1) > 70) {
             odds += map.logOdds(x1,y1);// + 127;
         } 
         
@@ -54,7 +54,7 @@ double SensorModel::likelihood(const particle_t& sample, const lidar_t& scan, co
             double nearby_odds = 0;
             for (int i=-1;i<=1;i++) {
                 for (int j=-1;j<=1;j++) {
-                    if (map.logOdds(x1+i,y1+j) > 30) {
+                    if (map.logOdds(x1+i,y1+j) > 70) {
                         nearby_odds += map.logOdds(x1+i,y1+j); // + 127;
                     }
                 }
