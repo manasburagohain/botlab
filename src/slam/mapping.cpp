@@ -30,7 +30,7 @@ void Mapping::updateMap(const lidar_t& scan, const pose_xyt_t& pose, OccupancyGr
     //printf("%f\n",x);
 
     //const float grid_size = map.metersPerCell(); //.05; // 5cm
-    float Kp = 3.5; // was 1;
+    float Kp = 10; // was 1;
     float Kn = 3.5;
 
     // float x_origin = map.originInGlobalFrame().x;

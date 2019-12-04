@@ -100,8 +100,34 @@ robot_path_t plan_path_to_frontier(const std::vector<frontier_t>& frontiers,
     *       be able to drive straight to a frontier cell, but will need to drive somewhere close.
     */
     robot_path_t emptyPath;
+
+    // if no frontiers, return empty path
+    if (frontiers.size() == 0) return emptyPath;
     
-    return emptyPath;
+    float min_dist = 99999999999999;
+    //frontier_t closest_frontier;
+    Point<float> closest_point;
+
+    // step 1: figure out which of the frontiers to drive to
+    // use shortest euclidian distance frontier, effectively making breadth first search
+    for (auto frontier : frontiers) {
+        for (auto point : frontier.cells) {
+            float distance_sq = (robotPose.x - point.x)*(robotPose.x - point.x) + (robotPose.y - point.y)*(robotPose.y - point.y) ;// euclidian distance
+            if (distance_sq < min_dist) {
+                //closest_frontier = frontier;
+                closest_point = point;
+                min_dist = distance_sq;
+            }
+        }
+    }
+
+    pose_xyt_t goal_pose;
+    goal_pose.x = closest_point.x;
+    goal_pose.y = closest_point.y;
+    goal_pose.theta = robotPose.theta;
+
+    // step 2: call motion planner to get a path to that frontier with astar
+    return planner.planPath(robotPose, goal_pose);
 }
 
 

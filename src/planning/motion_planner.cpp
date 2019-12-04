@@ -76,6 +76,26 @@ bool MotionPlanner::isPathSafe(const robot_path_t& path) const
 {
 
     ///////////// TODO: Implement your test for a safe path here //////////////////
+    int stride = 3;
+    for (int i = 0; i < path.path.size(); i+=stride) {
+        pose_xyt_t pose = path.path.at(i);
+
+        // check if valid pose
+        auto goalCell = global_position_to_grid_cell(Point<double>(pose.x, pose.y), distances_);
+        // A valid goal is in the grid
+        if(distances_.isCellInGrid(goalCell.x, goalCell.y))
+        {
+            // And is far enough from obstacles that the robot can physically occupy the space
+            // Add an extra cell to account for discretization error and make motion a little safer by not trying to
+            // completely snuggle up against the walls in the motion plan
+
+            // closer to an obstacle than robot radius, so return false
+            if (!distances_(goalCell.x, goalCell.y) > params_.robotRadius) return false;
+        } else { 
+            // not in the grid
+            return false;
+        }
+    }
 
     return true;
 }

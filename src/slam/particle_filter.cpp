@@ -50,8 +50,12 @@ void ParticleFilter::initializeFilterAtPose(const pose_xyt_t& pose)
         //set particle pose to initial pose
         posterior_[i].pose = pose;
         posterior_[i].weight = 1.0 / kNumParticles_;
-        posterior_[i].parent_pose = pose;
+        posterior_[i].parent_pose = pose;  
     }
+
+    actionModel_.pre_odometry.x = pose.x;
+    actionModel_.pre_odometry.y = pose.y;
+    actionModel_.pre_odometry.theta = pose.theta;
 
     printf("Initialized particle filter to pose\n");
     // to-do try printing pose for next time

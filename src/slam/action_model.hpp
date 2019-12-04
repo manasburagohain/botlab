@@ -52,11 +52,13 @@ public:
     * \return   New sample based on distribution from the motion model at the current update.
     */
     particle_t applyAction(const particle_t& sample);
+
+    pose_xyt_t pre_odometry;
+
     
 private:
     
     ////////// TODO: Add private member variables needed for you implementation ///////////////////
-    pose_xyt_t pre_odometry;
     
     float alpha1;
     float alpha2;

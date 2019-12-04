@@ -243,6 +243,30 @@ int8_t Exploration::executeExploringMap(bool initialize)
     *           explored more of the map.
     *       -- You will likely be able to see the frontier before actually reaching the end of the path leading to it.
     */
+
+   // Update frontiers
+   frontiers_ = find_map_frontiers(currentMap_, currentPose_);
+
+    bool need_to_update_path = false;
+   // Check if current_path is not empty
+   if (!currentPath_.path.empty()) {
+       // then we want to check if that path is valid
+       if (planner_.isPathSafe(currentPath_)) {
+           // Then keep going on current path
+           // TO-DO: say keep going forwards
+       } else { // current path was not safe, so need to update path
+        need_to_update_path = true;
+       }
+   } else { // current path was empty (maybe finished trajectory), so update path
+        need_to_update_path = true;
+   }
+
+    // What do we do if frontiers is empty?
+
+    // If we need to update path, use function to get path from frontiers
+    if (need_to_update_path) {
+        currentPath_ = plan_path_to_frontier(frontiers_, currentPose_, currentMap_, planner_);
+    }
     
     /////////////////////////////// End student code ///////////////////////////////
     

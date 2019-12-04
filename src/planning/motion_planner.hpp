@@ -119,7 +119,7 @@ public:
     * \param    path            Path to be checked for safety
     * \return   True if the path is safe to execute.
     */
-    bool isPathSafe(const robot_path_t& path) const;
+    bool isPathSafe(const robot_path_t& path) const; //const;
     
     /**
     * setMap sets the map for which path's will be planned.
