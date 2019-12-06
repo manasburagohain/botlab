@@ -83,7 +83,7 @@ bool MotionPlanner::isPathSafe(const robot_path_t& path) const
     for (int i = 0; i < path.path.size(); i+=stride) {
         pose_xyt_t pose = path.path.at(i);
 
-        /* check if valid pose
+        // check if valid pose
         auto goalCell = global_position_to_grid_cell(Point<double>(pose.x, pose.y), distances_);
         // A valid goal is in the grid
         if(distances_.isCellInGrid(goalCell.x, goalCell.y))
@@ -98,8 +98,8 @@ bool MotionPlanner::isPathSafe(const robot_path_t& path) const
             // not in the grid
             return false;
         }
-        */
-       if (!isValidGoal(pose)) return false;
+        //
+       //if (!isValidGoal(pose)) return false;
     }
 
     return true;
