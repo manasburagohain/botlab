@@ -249,8 +249,11 @@ int8_t Exploration::executeExploringMap(bool initialize)
    planner_.setMap(currentMap_);
    frontiers_ = find_map_frontiers(currentMap_, currentPose_);
 
+    for (auto pose : currentPath_.path) {
+        std::cout << "Path X: " << pose.x << "\t Path Y: " << pose.y << "\n" ;
+    }
 
-    bool need_to_update_path = false;
+   bool need_to_update_path = false;
    // Check if current_path is not empty
    if (!currentPath_.path.empty()) {
        // then we want to check if that path is valid
@@ -263,6 +266,8 @@ int8_t Exploration::executeExploringMap(bool initialize)
    } else { // current path was empty (maybe finished trajectory), so update path
         need_to_update_path = true;
    }
+
+   std::cout << "Need to update path: " << need_to_update_path;
 
     // What do we do if frontiers is empty?
 
