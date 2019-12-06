@@ -253,7 +253,7 @@ int8_t Exploration::executeExploringMap(bool initialize)
        // then we want to check if that path is valid
        if (planner_.isPathSafe(currentPath_)) {
            // Then keep going on current path
-           // TO-DO: say keep going forwards
+           // Don't need to update current path
        } else { // current path was not safe, so need to update path
         need_to_update_path = true;
        }
