@@ -249,6 +249,7 @@ int8_t Exploration::executeExploringMap(bool initialize)
    planner_.setMap(currentMap_);
    frontiers_ = find_map_frontiers(currentMap_, currentPose_);
 
+
     bool need_to_update_path = false;
    // Check if current_path is not empty
    if (!currentPath_.path.empty()) {
@@ -270,6 +271,10 @@ int8_t Exploration::executeExploringMap(bool initialize)
         currentPath_ = plan_path_to_frontier(frontiers_, currentPose_, currentMap_, planner_);
     }
     
+    for (auto pose : currentPath_.path) {
+        std::cout << "Path X: " << pose.x << "\t Path Y: " << pose.y << "\n" ;
+    }
+
     /////////////////////////////// End student code ///////////////////////////////
     
     /////////////////////////   Create the status message    //////////////////////////
