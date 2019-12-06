@@ -76,7 +76,7 @@ bool MotionPlanner::isPathSafe(const robot_path_t& path) const
 {
 
     ///////////// TODO: Implement your test for a safe path here //////////////////
-    int stride = 3;
+    int stride = 1;
 
     //setPrevGoal(path.path[0]);
 
@@ -99,7 +99,7 @@ bool MotionPlanner::isPathSafe(const robot_path_t& path) const
             return false;
         }
         */
-       isValidGoal(pose);
+       if (!isValidGoal(pose)) return false;
     }
 
     return true;
