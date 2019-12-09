@@ -67,14 +67,14 @@ public:
     {
         //////////// TODO: Implement your feedback controller here. //////////////////////
         
-        const float kPGain = 0.27f;
+        const float kPGain = 0.27f; //0.27f;
         const float kDGain = 0.0f;
         const float kIGain = 0.0003f;
 
-        const float kPTurnGain = 0.4f;
-        const float kDesiredSpeed = 0.2f;
+        const float kPTurnGain = 4.0f; //0.4f;
+        const float kDesiredSpeed = .4f; // 0.2f;
         const float kMinSpeed = 0.1f;
-        const float kTurnSpeed = 1.0f;
+        const float kTurnSpeed = 3.0f; //1.0f;
         const float kTurnMaxSpeed = 0.6f;
         const float slowDownDistance = 0.4f;
         
@@ -133,7 +133,7 @@ public:
                         if (turnspeed >= 0) {
                             turnspeed = std::min(turnspeed, kTurnMaxSpeed);
                         } else {
-                            turnspeed = std::max(-turnspeed, -kTurnMaxSpeed);
+                            turnspeed = std::max(turnspeed, -kTurnMaxSpeed);
                         }
                     }
 
