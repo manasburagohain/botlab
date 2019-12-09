@@ -67,7 +67,7 @@ int main(int argc, char** argv)
         test_narrow_constriction_grid,
         test_wide_constriction_grid,
         test_convex_grid,
-        test_maze_grid
+        test_maze_grid,
     };
     
     std::size_t numPassed = 0;

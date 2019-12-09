@@ -35,9 +35,9 @@ void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
             {
                 for (int k = 0; k < obs.size(); k++)
                 {
-                    if (dist > abs(obs[k][0] - i) + abs(obs[k][1] - j))
+                    if (dist > fabs(obs[k][0] - i) + fabs(obs[k][1] - j))
                     {
-                        dist = abs(obs[k][0] - i) + abs(obs[k][1] - j);
+                        dist = fabs(obs[k][0] - i) + fabs(obs[k][1] - j);
                         if(i == 2 && j == 2)
                         printf("%d,%d,%d,%d\n",map.logOdds(i,j),obs[k][0],obs[k][1],dist);
                     }

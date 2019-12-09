@@ -37,11 +37,11 @@ struct Node
 };
 
 inline bool operator < (const Node& lhs, const Node& rhs);
-static bool isValid(int x, int y, const ObstacleDistanceGrid& distances, double minDist);
+static bool isValid(int x, int y, const ObstacleDistanceGrid& distances,  const double minDist);
 static bool isDestination(int x, int y, Node dest);
 static double calculateH(int x, int y, Node dest);
 static double calculateO(int x, int y, const ObstacleDistanceGrid& distances, const SearchParams& params);
-
+bool isCellInGrid(int x, int y, const ObstacleDistanceGrid& distances);
 /*
 static robot_path_t makePath(array<array < Node, (distances.heightInCells())>, distances.widthInCells()> map, Node dest, const ObstacleDistanceGrid& distances)
 {

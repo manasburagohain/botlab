@@ -94,6 +94,8 @@ void Exploration::handleConfirmation(const lcm::ReceiveBuffer* rbuf, const std::
 {
     std::lock_guard<std::mutex> autoLock(dataLock_);
     if(confirm->channel == CONTROLLER_PATH_CHANNEL && confirm->creation_time == most_recent_path_time) pathReceived_ = true;
+    //if(confirm->channel == CONTROLLER_PATH_CHANNEL) pathReceived_ = true;
+    //pathReceived_ = true;
 }
 
 bool Exploration::isReadyToUpdate(void)
@@ -249,6 +251,8 @@ int8_t Exploration::executeExploringMap(bool initialize)
    planner_.setMap(currentMap_);
    frontiers_ = find_map_frontiers(currentMap_, currentPose_);
 
+   std::cout << "Num frontiers: " << frontiers_.size() << "\n";
+
     for (auto pose : currentPath_.path) {
         std::cout << "Path X: " << pose.x << "\t Path Y: " << pose.y << "\n" ;
     }
@@ -274,6 +278,12 @@ int8_t Exploration::executeExploringMap(bool initialize)
     // If we need to update path, use function to get path from frontiers
     if (need_to_update_path) {
         currentPath_ = plan_path_to_frontier(frontiers_, currentPose_, currentMap_, planner_);
+        /*
+        auto new_pose = currentPath_.path[currentPath_.path_length-1];
+        new_pose.x += .1;
+        new_pose.y += .1;
+        currentPath_.path.push_back(new_pose);
+        */
     }
     
     for (auto pose : currentPath_.path) {

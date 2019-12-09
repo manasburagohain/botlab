@@ -13,9 +13,10 @@ robot_path_t search_for_path(pose_xyt_t start,
 {
 
     ////////////////// TODO: Implement your A* search here //////////////////////////
+	vector< vector<Node>> allMap;
     Node startnode, dest;
-    printf("\n%f,%f\n%f,%f\n",start.x,start.y,goal.x,goal.y);
-	printf("%f,%f\n",distances.originInGlobalFrame().x,distances.originInGlobalFrame().y);
+    //printf("\n%f,%f\n%f,%f\n",start.x,start.y,goal.x,goal.y);
+	//printf("%f,%f\n",distances.originInGlobalFrame().x,distances.originInGlobalFrame().y);
 	robot_path_t path;
     path.utime = start.utime;
     path.path.push_back(start);    
@@ -24,22 +25,40 @@ robot_path_t search_for_path(pose_xyt_t start,
     dest.y = (int)((goal.y - distances.originInGlobalFrame().y) * distances.cellsPerMeter()) + 1;
     startnode.x = ((int)(start.x - distances.originInGlobalFrame().x) * distances.cellsPerMeter()) + 1;
     startnode.y = ((int)(start.y - distances.originInGlobalFrame().y) * distances.cellsPerMeter()) + 1;
-    if (!isValid(dest.x, dest.y, distances, params.minDistanceToObstacle))
+    printf("\n%d,%d\n%d,%d\n",startnode.x,startnode.y,dest.x,dest.y);
+	if (!isValid(dest.x, dest.y, distances, params.minDistanceToObstacle))
     {
-		printf("4\n");
-	    printf("Destination is cannot be reached");
+		printf("Destination is cannot be reached\n");
 		path.path_length = path.path.size();
 		return path;
-    }    
+    }  
+	if (!isValid(startnode.x, startnode.y, distances, params.minDistanceToObstacle))
+    {
+		printf("Origin is invalid\n");
+		path.path_length = path.path.size();
+		return path;
+    }      
 	if(isDestination(startnode.x, startnode.y, dest))
     {
-        printf("Already at Destination");
+        printf("Already at Destination\n");
 		path.path_length = path.path.size();
         return path;
     }
+	//printf("\n1");
+	
+	if(!isCellInGrid(dest.x, dest.y, distances) || !isCellInGrid(startnode.x, startnode.y, distances))
+	{
+		printf("Start or Destination not in grid%f\n",distances.operator()(startnode.x,startnode.y));
+		path.path_length = path.path.size();
+        return path;
+	}
+	// else	
+	// 	printf("\n2");
+	// printf("\n3");
+	// printf("\n4");
 	bool closedList[distances.widthInCells()][distances.heightInCells()];
     
-	vector< vector<Node>> allMap;
+	
     for (int x = 0; x < (distances.widthInCells()); x++) 
     {
 		vector<Node> suptemp;
@@ -59,7 +78,6 @@ robot_path_t search_for_path(pose_xyt_t start,
 		}
     int x = startnode.x;
 	int y = startnode.y;
-	printf("X:%d,Y:%d\n",x,y);
 	allMap[x][y].fCost = 0.0;
 	allMap[x][y].gCost = 0.0;
 	allMap[x][y].hCost = 0.0;
@@ -68,6 +86,7 @@ robot_path_t search_for_path(pose_xyt_t start,
     vector<Node> openList;	
 	openList.emplace_back(allMap[x][y]);
 	bool destinationFound = false;
+	
 
     while (!openList.empty()&&openList.size()<(distances.widthInCells())*(distances.heightInCells())) 
     {
@@ -108,6 +127,7 @@ robot_path_t search_for_path(pose_xyt_t start,
 			x = node.x;
 			y = node.y;
 			closedList[x][y] = true;
+			//printf("%f",params.minDistanceToObstacle);
 
 			//For each neighbour starting from North-West to South-East
 			for (int newX = -1; newX <= 1; newX++) 
@@ -115,7 +135,7 @@ robot_path_t search_for_path(pose_xyt_t start,
 				for (int newY = -1; newY <= 1; newY++) 
                 {
 					double gNew, hNew, oNew, fNew;
-					if (isValid(x + newX, y + newY,distances, params.minDistanceToObstacle)) //add isValid()
+					if (isValid(x + newX, y + newY, distances, params.minDistanceToObstacle)) //add isValid()
                     {
 						if (isDestination(x + newX, y + newY, dest)) //add isGoal
 						{
@@ -157,7 +177,7 @@ robot_path_t search_for_path(pose_xyt_t start,
 							}
 							usablePath.path_length = usablePath.path.size();
 							//for(int i = 0 ; i<usablePath.path_length; i++)
-						//		printf("X: %f, Y: %f\n", usablePath.path[i].x, usablePath.path[i].y);
+							//	printf("X: %f, Y: %f\n", usablePath.path[i].x, usablePath.path[i].y);
 							return usablePath;
 
 
@@ -180,6 +200,7 @@ robot_path_t search_for_path(pose_xyt_t start,
 								allMap[x + newX][y + newY].parentY = y;
 								openList.emplace_back(allMap[x + newX][y + newY]);
 							}
+							//printf("x: %d, y: %d\n", x+newX, y+newY);
 						}
 					}
 				}
@@ -202,15 +223,17 @@ inline bool operator < (const Node& lhs, const Node& rhs)
     return lhs.fCost < rhs.fCost;
 }
 
-static bool isValid(int x, int y, const ObstacleDistanceGrid& distances, double minDist) 
+static bool isValid(int x, int y, const ObstacleDistanceGrid& distances, const double minDist) 
 { //If our Node is an obstacle it is not valid
-	if (distances.operator()(x,y) >= minDist) 
+	if (distances.operator()(x,y) >  minDist) 
 	{
-        if (x < 0 || y < 0 || x >= (distances.widthInCells()) || y >= (distances.heightInCells())) {
+		//printf("%f\n", minDist * distances.cellsPerMeter());
+		if (x < 0 || y < 0 || x >= (distances.widthInCells()) || y >= (distances.heightInCells())) {
             return false;
         }
         return true;
     } 
+	//printf("%d,%d: %d\n", x,y,distances.operator()(x,y));
    return false;
 }
 
@@ -240,4 +263,12 @@ static double calculateO(int x, int y, const ObstacleDistanceGrid& distances, co
         return    pow(params.maxDistanceWithCost - dist, params.distanceCostExponent);
     }
     return 0.0;
+}
+
+bool isCellInGrid(int x, int y, const ObstacleDistanceGrid& distances)
+{ 
+    bool xCoordIsValid = (x >= 0) && (x < distances.widthInCells());
+    bool yCoordIsValid = (y >= 0) && (y < distances.heightInCells());
+	//printf("x:%d, y:%d\n", xCoordIsValid, yCoordIsValid);
+    return (xCoordIsValid && yCoordIsValid);
 }
