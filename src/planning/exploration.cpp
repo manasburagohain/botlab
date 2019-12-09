@@ -93,9 +93,8 @@ void Exploration::handlePose(const lcm::ReceiveBuffer* rbuf, const std::string& 
 void Exploration::handleConfirmation(const lcm::ReceiveBuffer* rbuf, const std::string& channel, const message_received_t* confirm)
 {
     std::lock_guard<std::mutex> autoLock(dataLock_);
-    if(confirm->channel == CONTROLLER_PATH_CHANNEL && confirm->creation_time == most_recent_path_time) pathReceived_ = true;
-    //if(confirm->channel == CONTROLLER_PATH_CHANNEL) pathReceived_ = true;
-    //pathReceived_ = true;
+    //if(confirm->channel == CONTROLLER_PATH_CHANNEL && confirm->creation_time == most_recent_path_time) pathReceived_ = true;
+    if(confirm->channel == CONTROLLER_PATH_CHANNEL) pathReceived_ = true;
 }
 
 bool Exploration::isReadyToUpdate(void)
@@ -257,6 +256,7 @@ int8_t Exploration::executeExploringMap(bool initialize)
         std::cout << "Path X: " << pose.x << "\t Path Y: " << pose.y << "\n" ;
     }
 
+    /*
    bool need_to_update_path = false;
    // Check if current_path is not empty
    if (!currentPath_.path.empty()) {
@@ -270,20 +270,32 @@ int8_t Exploration::executeExploringMap(bool initialize)
    } else { // current path was empty (maybe finished trajectory), so update path
         need_to_update_path = true;
    }
+   */
 
-   std::cout << "Need to update path: " << need_to_update_path;
+    bool need_to_update_path = !planner_.isPathSafe(currentPath_);
+    //bool need_to_update_path = true;
+
+   std::cout << "Need to update path: " << need_to_update_path << "\n";
 
     // What do we do if frontiers is empty?
 
     // If we need to update path, use function to get path from frontiers
     if (need_to_update_path) {
-        currentPath_ = plan_path_to_frontier(frontiers_, currentPose_, currentMap_, planner_);
-        /*
-        auto new_pose = currentPath_.path[currentPath_.path_length-1];
-        new_pose.x += .1;
-        new_pose.y += .1;
+        //currentPath_ = plan_path_to_frontier(frontiers_, currentPose_, currentMap_, planner_);
+        if (currentPath_.path.empty()) {
+            std::cout << "Here -1\n";
+            std::cout << "Path Length: " << currentPath_.path_length << "\n";
+            std::vector<pose_xyt_t> temp_vec;
+            temp_vec.push_back(currentPose_);
+            currentPath_.path = temp_vec;
+        }
+
+
+        pose_xyt_t new_pose = currentPath_.path.at(currentPath_.path_length - 1);//-1);
+        new_pose.x += .5;
+        new_pose.y += .5;
         currentPath_.path.push_back(new_pose);
-        */
+        currentPath_.path_length += 1;
     }
     
     for (auto pose : currentPath_.path) {
