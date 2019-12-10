@@ -21,10 +21,10 @@ robot_path_t search_for_path(pose_xyt_t start,
     path.utime = start.utime;
     path.path.push_back(start);    
     //convert to grid cell
-    dest.x = (int)((goal.x - distances.originInGlobalFrame().x) * distances.cellsPerMeter()) + 1;
-    dest.y = (int)((goal.y - distances.originInGlobalFrame().y) * distances.cellsPerMeter()) + 1;
-    startnode.x = ((int)(start.x - distances.originInGlobalFrame().x) * distances.cellsPerMeter()) + 1;
-    startnode.y = ((int)(start.y - distances.originInGlobalFrame().y) * distances.cellsPerMeter()) + 1;
+    dest.x = static_cast<int>((goal.x - distances.originInGlobalFrame().x) * distances.cellsPerMeter());// + 1;
+    dest.y = static_cast<int>((goal.y - distances.originInGlobalFrame().y) * distances.cellsPerMeter());// + 1;
+    startnode.x = static_cast<int>((start.x - distances.originInGlobalFrame().x) * distances.cellsPerMeter());// + 1;
+    startnode.y = static_cast<int>((start.y - distances.originInGlobalFrame().y) * distances.cellsPerMeter());// + 1;
     printf("\n%d,%d\n%d,%d\n",startnode.x,startnode.y,dest.x,dest.y);
 	if (!isValid(dest.x, dest.y, distances, params.minDistanceToObstacle))
     {
@@ -156,17 +156,27 @@ robot_path_t search_for_path(pose_xyt_t start,
 							while (!(allMap[x][y].parentX==x && allMap[x][y].parentY==y) && allMap[x][y].x != -1 && allMap[x][y].y != -1)
 							{
 								pose_xyt_t tempnode;
-								tempnode.x = (allMap[x][y].x - 1) * distances.metersPerCell() + distances.originInGlobalFrame().x;
-								tempnode.y = (allMap[x][y].y - 1) * distances.metersPerCell() + distances.originInGlobalFrame().y;
+								//printf("X: %d, Y: %d\n", x, y);
+								tempnode.x = static_cast<float>((allMap[x][y].x) * distances.metersPerCell() + distances.originInGlobalFrame().x);
+								tempnode.y = static_cast<float>((allMap[x][y].y) * distances.metersPerCell() + distances.originInGlobalFrame().y);
 								path.push(tempnode);
 								int tempX = allMap[x][y].parentX;
 								int tempY = allMap[x][y].parentY;
 								x = tempX;
 								y = tempY;
+								if (!isValid(x, y, distances, params.minDistanceToObstacle))
+								{
+									cout << "Path found is invalid" << "\n";
+									robot_path_t invalidpath;
+									invalidpath.utime = start.utime;
+    								invalidpath.path.push_back(start);   
+									invalidpath.path_length = invalidpath.path.size();
+									return invalidpath;
+								}
 							}
 							pose_xyt_t node;
-							node.x = (allMap[x][y].x - 1) * distances.metersPerCell() + distances.originInGlobalFrame().x;
-							node.y = (allMap[x][y].y - 1) * distances.metersPerCell() + distances.originInGlobalFrame().y;
+							node.x = static_cast<float>((allMap[x][y].x) * distances.metersPerCell() + distances.originInGlobalFrame().x);
+							node.y = static_cast<float>((allMap[x][y].y) * distances.metersPerCell() + distances.originInGlobalFrame().y);
 							path.push(node);
 
 							while (!path.empty())
@@ -176,8 +186,8 @@ robot_path_t search_for_path(pose_xyt_t start,
 								usablePath.path.emplace_back(top);
 							}
 							usablePath.path_length = usablePath.path.size();
-							//for(int i = 0 ; i<usablePath.path_length; i++)
-							//	printf("X: %f, Y: %f\n", usablePath.path[i].x, usablePath.path[i].y);
+							// for(int i = 0 ; i<usablePath.path_length; i++)
+							// 	printf("X: %f, Y: %f\n", usablePath.path[i].x, usablePath.path[i].y);
 							return usablePath;
 
 
@@ -225,7 +235,8 @@ inline bool operator < (const Node& lhs, const Node& rhs)
 
 static bool isValid(int x, int y, const ObstacleDistanceGrid& distances, const double minDist) 
 { //If our Node is an obstacle it is not valid
-	if (distances.operator()(x,y) >  minDist) 
+	//printf("%d,%d: %f, %f\n", x,y,distances.operator()(x,y), minDist);
+	if (distances.operator()(x,y) >  minDist*1.000001) 
 	{
 		//printf("%f\n", minDist * distances.cellsPerMeter());
 		if (x < 0 || y < 0 || x >= (distances.widthInCells()) || y >= (distances.heightInCells())) {
@@ -233,8 +244,8 @@ static bool isValid(int x, int y, const ObstacleDistanceGrid& distances, const d
         }
         return true;
     } 
-	//printf("%d,%d: %d\n", x,y,distances.operator()(x,y));
-   return false;
+	//printf("%d,%d: %f\n", x,y,distances.operator()(x,y));
+    return false;
 }
 
 static bool isDestination(int x, int y, Node dest) 

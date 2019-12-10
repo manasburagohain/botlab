@@ -67,7 +67,7 @@ int main(int argc, char** argv)
         test_narrow_constriction_grid,
         test_wide_constriction_grid,
         test_convex_grid,
-        test_maze_grid,
+        test_maze_grid
     };
     
     std::size_t numPassed = 0;
@@ -172,6 +172,7 @@ bool test_saved_poses(const std::string& mapFile, const std::string& posesFile, 
         poseIn >> start.x >> start.y >> goal.x >> goal.y >> shouldExist;
         
         robot_path_t path = timed_find_path(start, goal, planner, testName);
+        //std::cout << "Path length received:" << path.path_length << "\n";
         
         // See if the generated path was valid
         bool foundPath = path.path_length > 1;
@@ -180,6 +181,8 @@ bool test_saved_poses(const std::string& mapFile, const std::string& posesFile, 
         {
             auto goalCell = global_position_to_grid_cell(Point<float>(goal.x, goal.y), grid);
             auto endCell = global_position_to_grid_cell(Point<float>(path.path.back().x, path.path.back().y), grid);
+            // std::cout << "goalCell X:" << goalCell.x << " goalCell Y:" << goalCell.y << "\n";
+            // std::cout << "endCell X:" << endCell.x << " endCell Y:" << endCell.y << "\n";
             foundPath &= goalCell == endCell;
         }
         
