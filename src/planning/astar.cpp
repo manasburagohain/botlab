@@ -194,7 +194,12 @@ robot_path_t search_for_path(pose_xyt_t start,
 						}
 						else if (closedList[x + newX][y + newY] == false)
 						{
-							gNew = node.gCost + 1.0;
+							if(abs(newX)+abs(newY)==2)
+								gNew=node.gCost + 1.4;
+							else if (abs(newX)+abs(newY)==0)
+								gNew = node.gCost; 
+							else
+								gNew = node.gCost + 1.0;
 							hNew = calculateH(x + newX, y + newY, dest); //add Caluclate H
                             oNew = calculateO(x + newX, y + newY, distances, params);  //add Caluculate O
 							fNew = gNew + hNew + oNew; //add Obstacle Cost
@@ -271,7 +276,7 @@ static double calculateO(int x, int y, const ObstacleDistanceGrid& distances, co
     {
         ///<   pow(maxDistanceWithCost - cellDistance, distanceCostExponent)
         ///< for cellDistance > minDistanceToObstacle && cellDistance < maxDistanceWithCost
-        return    pow(params.maxDistanceWithCost - dist, params.distanceCostExponent);
+        return    pow(params.maxDistanceWithCost - dist, params.distanceCostExponent+1);
     }
     return 0.0;
 }
