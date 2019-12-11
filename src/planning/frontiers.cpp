@@ -85,6 +85,12 @@ std::vector<frontier_t> find_map_frontiers(const OccupancyGrid& map,
     return frontiers;
 }
 
+bool check_valid(const MotionPlanner& planner, float x, float y) {
+    pose_xyt_t pose;
+    pose.x = x;
+    pose.y = y;
+    return planner.isValidGoal(pose);
+}
 
 robot_path_t plan_path_to_frontier(const std::vector<frontier_t>& frontiers, 
                                    const pose_xyt_t& robotPose,
@@ -121,19 +127,56 @@ robot_path_t plan_path_to_frontier(const std::vector<frontier_t>& frontiers,
         }
     }
 
+// Search around the frontier until you find the closest white point
+    bool foundPose = false;
+    float square_radius = .05;
+    float sq_len = .05;
+    pose_xyt_t goal_pose;
+    while (!foundPose) {
+        // find the white point        //check top and bottom
+        float top_height = closest_point.y + square_radius;
+        float bot_height = closest_point.y - square_radius;
+        for (float i = -square_radius; i <= square_radius; i+=sq_len ) {
+            bool valid_point_top = check_valid(planner, closest_point.x + i, top_height); // absolute x, absolute y
+            bool valid_point_bot = check_valid(planner, closest_point.x + i, bot_height);
+            if (valid_point_top) {
+                foundPose = true;
+                goal_pose.x = closest_point.x + i;
+                goal_pose.y = top_height;
+            } else if (valid_point_bot) {
+                foundPose = true;
+                goal_pose.x = closest_point.x + i;
+                goal_pose.y = bot_height;
+            }
+        }        // check left and right
+        float left_bound = closest_point.y + square_radius;
+        float right_bound = closest_point.y - square_radius;
+        for (float i = -square_radius; i <= square_radius; i+=sq_len ) {
+            bool valid_point_right = check_valid(planner, right_bound, closest_point.y + i);
+            bool valid_point_left  = check_valid(planner, left_bound, closest_point.y + i);
+            if (valid_point_right) {
+                foundPose = true;
+                goal_pose.x = right_bound;
+                goal_pose.y = closest_point.y + i;
+            } else if (valid_point_left) {
+                foundPose = true;
+                goal_pose.x = left_bound;
+                goal_pose.y = closest_point.y + i;
+            }
+        }        square_radius+=sq_len;
+    }    /*
     pose_xyt_t goal_pose;
     goal_pose.x = closest_point.x;
     goal_pose.y = closest_point.y;
-    goal_pose.theta = robotPose.theta;
-
-    // step 2: call motion planner to get a path to that frontier with astar
+    */    
+    goal_pose.theta = robotPose.theta;    // step 2: call motion planner to get a path to that frontier with astar
     return planner.planPath(robotPose, goal_pose);
 }
 
 
 bool is_frontier_cell(int x, int y, const OccupancyGrid& map)
 {
-    // A cell if a frontier if it has log-odds 0 and a neighbor has log-odds < 0
+    // A cell sf a frontier if it has log-odds 0 and a neighbor has log-odds < 0
     
     // A cell must be in the grid and must have log-odds 0 to even be considered as a frontier
     if(!map.isCellInGrid(x, y) || (map(x, y) != 0))
@@ -149,7 +192,7 @@ bool is_frontier_cell(int x, int y, const OccupancyGrid& map)
     {
         // If any of the neighbors are free, then it's a frontier
         // Note that logOdds returns 0 for out-of-map cells, so no explicit check is needed.
-        if(map.logOdds(x + xDeltas[n], y + yDeltas[n]) < 0)
+        if(map.logOdds(x + xDeltas[n], y + yDeltas[n]) < -10) // change this to -30 from 0
         {
             return true;
         }

@@ -93,8 +93,10 @@ void Exploration::handlePose(const lcm::ReceiveBuffer* rbuf, const std::string& 
 void Exploration::handleConfirmation(const lcm::ReceiveBuffer* rbuf, const std::string& channel, const message_received_t* confirm)
 {
     std::lock_guard<std::mutex> autoLock(dataLock_);
+    std::cout<<"I got a message confirmation! \n";
     //if(confirm->channel == CONTROLLER_PATH_CHANNEL && confirm->creation_time == most_recent_path_time) pathReceived_ = true;
-    if(confirm->channel == CONTROLLER_PATH_CHANNEL) pathReceived_ = true;
+    //if(confirm->channel == CONTROLLER_PATH_CHANNEL) pathReceived_ = true;
+    pathReceived_ = true;
 }
 
 bool Exploration::isReadyToUpdate(void)
@@ -272,8 +274,8 @@ int8_t Exploration::executeExploringMap(bool initialize)
    }
    */
 
-    bool need_to_update_path = !planner_.isPathSafe(currentPath_);
-    //bool need_to_update_path = true;
+    //bool need_to_update_path = !planner_.isPathSafe(currentPath_);
+    bool need_to_update_path = true;
 
    std::cout << "Need to update path: " << need_to_update_path << "\n";
 
@@ -281,7 +283,9 @@ int8_t Exploration::executeExploringMap(bool initialize)
 
     // If we need to update path, use function to get path from frontiers
     if (need_to_update_path) {
-        //currentPath_ = plan_path_to_frontier(frontiers_, currentPose_, currentMap_, planner_);
+        currentPath_ = plan_path_to_frontier(frontiers_, currentPose_, currentMap_, planner_);
+        currentPath_.path_length = currentPath_.path.size();
+        /*
         if (currentPath_.path.empty()) {
             std::cout << "Here -1\n";
             std::cout << "Path Length: " << currentPath_.path_length << "\n";
@@ -296,6 +300,7 @@ int8_t Exploration::executeExploringMap(bool initialize)
         new_pose.y += .5;
         currentPath_.path.push_back(new_pose);
         currentPath_.path_length += 1;
+        */
     }
     
     for (auto pose : currentPath_.path) {
@@ -323,7 +328,7 @@ int8_t Exploration::executeExploringMap(bool initialize)
     // Otherwise, there are frontiers, but no valid path exists, so exploration has failed
     else
     {
-        status.status = exploration_status_t::STATUS_FAILED;
+        //status.status = exploration_status_t::STATUS_FAILED;
     }
     
     lcmInstance_->publish(EXPLORATION_STATUS_CHANNEL, &status);

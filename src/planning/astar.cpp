@@ -186,9 +186,35 @@ robot_path_t search_for_path(pose_xyt_t start,
 								usablePath.path.emplace_back(top);
 							}
 							usablePath.path_length = usablePath.path.size();
-							// for(int i = 0 ; i<usablePath.path_length; i++)
-							// 	printf("X: %f, Y: %f\n", usablePath.path[i].x, usablePath.path[i].y);
-							return usablePath;
+							
+							// delete points on the same line
+							robot_path_t finalPath;
+							finalPath.path.emplace_back(usablePath.path[0]);
+							bool dir_change = 0;
+							for (int i = 1; i < usablePath.path_length; i++)
+							{
+								bool dir_x = (usablePath.path[i].x == usablePath.path[i-1].x);
+								bool dir_y = (usablePath.path[i].y == usablePath.path[i-1].y);
+								if (!dir_x && !dir_y)
+								{
+									if (dir_change == 0)
+									{
+										finalPath.path.emplace_back(usablePath.path[i-1]);
+										finalPath.path.emplace_back(usablePath.path[i]);
+									}
+									else
+										finalPath.path.emplace_back(usablePath.path[i]);
+									dir_change = 1;
+								}
+								else
+									dir_change = 0;
+							}
+							finalPath.path.emplace_back(usablePath.path[usablePath.path_length-1]);
+							finalPath.path_length = finalPath.path.size();
+
+							for(int i = 0 ; i<finalPath.path_length; i++)
+								printf("X: %f, Y: %f\n", finalPath.path[i].x, finalPath.path[i].y);
+							return finalPath; //usablePath;
 
 
 						}
