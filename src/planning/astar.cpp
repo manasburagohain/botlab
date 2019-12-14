@@ -32,12 +32,14 @@ robot_path_t search_for_path(pose_xyt_t start,
 		path.path_length = path.path.size();
 		return path;
     }  
+	/*
 	if (!isValid(startnode.x, startnode.y, distances, params.minDistanceToObstacle))
     {
 		printf("Origin is invalid\n");
 		path.path_length = path.path.size();
 		return path;
-    }      
+    } 
+	*/     
 	if(isDestination(startnode.x, startnode.y, dest))
     {
         printf("Already at Destination\n");
@@ -200,16 +202,20 @@ robot_path_t search_for_path(pose_xyt_t start,
 									if (dir_change == 0)
 									{
 										finalPath.path.emplace_back(usablePath.path[i-1]);
+										//finalPath.path.emplace_back(usablePath.path[i-1]);
 										finalPath.path.emplace_back(usablePath.path[i]);
+										//finalPath.path.emplace_back(usablePath.path[i]);
 									}
 									else
 										finalPath.path.emplace_back(usablePath.path[i]);
+										//finalPath.path.emplace_back(usablePath.path[i]);
 									dir_change = 1;
 								}
 								else
 									dir_change = 0;
 							}
 							finalPath.path.emplace_back(usablePath.path[usablePath.path_length-1]);
+							//finalPath.path.emplace_back(usablePath.path[usablePath.path_length-1]);
 							finalPath.path_length = finalPath.path.size();
 
 							for(int i = 0 ; i<finalPath.path_length; i++)
