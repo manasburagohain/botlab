@@ -115,7 +115,7 @@ robot_path_t plan_path_to_frontier(const std::vector<frontier_t>& frontiers,
     if (frontiers.size() == 0) return emptyPath;
     
     float min_dist = 99999999999999;
-    //frontier_t closest_frontier;
+    frontier_t closest_frontier;
     Point<float> closest_point;
 
     // step 1: figure out which of the frontiers to drive to
@@ -124,12 +124,15 @@ robot_path_t plan_path_to_frontier(const std::vector<frontier_t>& frontiers,
         for (auto point : frontier.cells) {
             float distance_sq = (robotPose.x - point.x)*(robotPose.x - point.x) + (robotPose.y - point.y)*(robotPose.y - point.y) ;// euclidian distance
             if (distance_sq < min_dist) {
-                //closest_frontier = frontier;
+                closest_frontier = frontier;
                 closest_point = point;
                 min_dist = distance_sq;
             }
         }
     }
+
+    closest_point = closest_frontier.cells[int((closest_frontier.cells.size()-1)/2)];
+
 
     // Search around the closest frontier until you find the closest point that you can get to
     bool foundPose = false;
