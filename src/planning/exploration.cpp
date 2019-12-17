@@ -237,18 +237,26 @@ int8_t Exploration::executeInitializing(void)
         p.x = 0;
         p.y = 0;
         currentPath_.path.push_back(p);
-        p.x = 1;
-        p.y = 0;
-        currentPath_.path.push_back(p);    
-        p.x = 1;
-        p.y = 1;
-        currentPath_.path.push_back(p);
-        p.x = 0;
-        p.y = 1;
-        currentPath_.path.push_back(p);
-        p.x = 0;
-        p.y = 0;
-        currentPath_.path.push_back(p);
+        for (int j = 0; j < 11; j++) {
+            p.x = .1*j;
+            p.y = 0;
+            currentPath_.path.push_back(p);
+        }
+        for (int j = 0; j < 11; j++) {
+            p.x = 1;
+            p.y = .1*j;
+            currentPath_.path.push_back(p);
+        }
+        for (int j = 0; j < 11; j++) {
+            p.x = 1-.1*j;
+            p.y = 1;
+            currentPath_.path.push_back(p);
+        }
+        for (int j = 0; j < 11; j++) {
+            p.x = 0;
+            p.y = 1-.1*j;
+            currentPath_.path.push_back(p);
+        }
     }
 
     currentPath_.path_length = currentPath_.path.size();
