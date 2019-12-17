@@ -258,6 +258,11 @@ int8_t Exploration::executeInitializing(void)
             currentPath_.path.push_back(p);
         }
     }
+    p.x = 0;
+    p.y = 0;
+    for (int i = 0; i < 5; i++){
+        currentPath_.path.push_back(p);
+    }
 
     currentPath_.path_length = currentPath_.path.size();
 
