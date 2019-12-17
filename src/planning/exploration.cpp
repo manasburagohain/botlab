@@ -275,7 +275,18 @@ int8_t Exploration::executeExploringMap(bool initialize)
    */
 
     //bool need_to_update_path = !planner_.isPathSafe(currentPath_);
-    bool need_to_update_path = true;
+    //bool need_to_update_path = true;
+    bool need_to_update_path = false;
+        if (currentPath_.path_length > 0) {
+        pose_xyt_t half_way = currentPath_.path.at(currentPath_.path_length / 2);
+        float dist = (currentPose_.x - half_way.x)*(currentPose_.x - half_way.x) + (currentPose_.y - half_way.y)*(currentPose_.y - half_way.y);
+        if (sqrt(dist) < .1) {
+            need_to_update_path = true;
+        } else {
+            need_to_update_path = true;
+        }
+    }
+
 
    std::cout << "Need to update path: " << need_to_update_path << "\n";
 
