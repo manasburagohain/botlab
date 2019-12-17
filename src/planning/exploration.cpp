@@ -231,6 +231,28 @@ int8_t Exploration::executeInitializing(void)
     currentPath_.path_length = 1;
     */
 
+    pose_xyt_t p;
+    for (int i =0; i < 4; i++) {
+        p.theta = currentPose_.theta;
+        p.x = 0;
+        p.y = 0;
+        currentPath_.path.push_back(p);
+        p.x = 1;
+        p.y = 0;
+        currentPath_.path.push_back(p);    
+        p.x = 1;
+        p.y = 1;
+        currentPath_.path.push_back(p);
+        p.x = 0;
+        p.y = 1;
+        currentPath_.path.push_back(p);
+        p.x = 0;
+        p.y = 0;
+        currentPath_.path.push_back(p);
+    }
+
+    currentPath_.path_length = currentPath_.path.size();
+
     return exploration_status_t::STATE_EXPLORING_MAP;
 }
 
@@ -260,6 +282,7 @@ int8_t Exploration::executeExploringMap(bool initialize)
    planner_.setMap(currentMap_);
    frontiers_ = find_map_frontiers(currentMap_, currentPose_);
     
+    /*
     pose_xyt_t p;
     for (int i =0; i < 4; i++) {
         p.theta = currentPose_.theta;
@@ -281,6 +304,7 @@ int8_t Exploration::executeExploringMap(bool initialize)
     }
 
     currentPath_.path_length = currentPath_.path.size();
+    */
 
     /*
    std::cout << "Num frontiers: " << frontiers_.size() << "\n";
