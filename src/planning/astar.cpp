@@ -163,6 +163,12 @@ robot_path_t search_for_path(pose_xyt_t start,
 								tempnode.x = static_cast<float>((allMap[x][y].x) * distances.metersPerCell() + distances.originInGlobalFrame().x);
 								tempnode.y = static_cast<float>((allMap[x][y].y) * distances.metersPerCell() + distances.originInGlobalFrame().y);
 								path.push(tempnode);
+
+								std::cout << "F cost: " << allMap[x][y].fCost << "\n";
+								std::cout << "O cost: " << allMap[x][y].oCost << "\n";
+								std::cout << "H cost: " << allMap[x][y].hCost << "\n";
+
+
 								int tempX = allMap[x][y].parentX;
 								int tempY = allMap[x][y].parentY;
 								x = tempX;
@@ -313,7 +319,7 @@ static double calculateO(int x, int y, const ObstacleDistanceGrid& distances, co
         ///<   pow(maxDistanceWithCost - cellDistance, distanceCostExponent)
         ///< for cellDistance > minDistanceToObstacle && cellDistance < maxDistanceWithCost
 		double cost = pow(params.maxDistanceWithCost - dist, params.distanceCostExponent + 3);
-		std::cout << "Distance cost: " << cost << "\n";
+		std::cout << "O cost: " << cost << "\n";
 		return cost;
 
         //return    pow(params.maxDistanceWithCost - dist, params.distanceCostExponent + 3); // added +1 
