@@ -422,7 +422,7 @@ int8_t Exploration::executeReturningHome(bool initialize)
     */
     
    planner_.setMap(currentMap_);
-   
+
    currentPath_ = planner_.planPath(currentPose_, homePose_);
 
     /////////////////////////////// End student code ///////////////////////////////
@@ -449,7 +449,7 @@ int8_t Exploration::executeReturningHome(bool initialize)
     // Else, there's no valid path to follow and we aren't home, so we have failed.
     else
     {
-        status.status = exploration_status_t::STATUS_FAILED;
+        //status.status = exploration_status_t::STATUS_FAILED;
     }
     
     lcmInstance_->publish(EXPLORATION_STATUS_CHANNEL, &status);
