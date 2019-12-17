@@ -80,7 +80,7 @@ bool MotionPlanner::isPathSafe(const robot_path_t& path) const
     if (path.path.empty()) return false;
 
     int stride = 1;
-    
+
     //setPrevGoal(path.path[0]);
 
     for (int i = 0; i < path.path.size(); i+=stride) {
@@ -96,7 +96,7 @@ bool MotionPlanner::isPathSafe(const robot_path_t& path) const
             // completely snuggle up against the walls in the motion plan
 
             // closer to an obstacle than robot radius, so return false
-            if (!distances_(goalCell.x, goalCell.y) > params_.robotRadius*2) return false;
+            if (!distances_(goalCell.x, goalCell.y) > params_.robotRadius) return false;
         } else { 
             // not in the grid
             return false;
