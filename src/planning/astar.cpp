@@ -312,7 +312,11 @@ static double calculateO(int x, int y, const ObstacleDistanceGrid& distances, co
     {
         ///<   pow(maxDistanceWithCost - cellDistance, distanceCostExponent)
         ///< for cellDistance > minDistanceToObstacle && cellDistance < maxDistanceWithCost
-        return    pow(params.maxDistanceWithCost - dist, params.distanceCostExponent + 3); // added +1 
+		double cost = pow(params.maxDistanceWithCost - dist, params.distanceCostExponent + 3);
+		std::cout << "Distance cost: " << cost << "\n";
+		return cost;
+
+        //return    pow(params.maxDistanceWithCost - dist, params.distanceCostExponent + 3); // added +1 
     }
     return 0.0;
 }
