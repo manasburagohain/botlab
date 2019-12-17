@@ -92,7 +92,10 @@ bool check_valid(const MotionPlanner& planner, float x, float y, pose_xyt_t curr
 
     if (planner.isValidGoal(pose)) {
         robot_path_t temp_path = planner.planPath(curr_pose, pose);
-        return planner.isPathSafe(temp_path);
+        if(temp_path.path_length <3) 
+            return false;
+        else
+            return planner.isPathSafe(temp_path);
     } else {
         return false;
     }
@@ -139,7 +142,7 @@ robot_path_t plan_path_to_frontier(const std::vector<frontier_t>& frontiers,
     // Search around the closest frontier until you find the closest point that you can get to
     bool foundPose = false;
     float square_radius = .05;
-    float sq_len = .2; // .05;
+    float sq_len = .1; // .05;
     pose_xyt_t goal_pose;
     while (!foundPose) {
         std::cout << "Looking for free spot to find path to!\n";
