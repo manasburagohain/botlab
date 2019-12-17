@@ -84,7 +84,7 @@ bool MotionPlanner::isPathSafe(const robot_path_t& path) const
     //setPrevGoal(path.path[0]);
 
     // Just added this to make short paths impossible
-    if (path.path_length < 4) {
+    if (path.path_length < 8) { // was 4
         return false;
     }
 
