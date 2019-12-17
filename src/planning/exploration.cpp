@@ -259,28 +259,37 @@ int8_t Exploration::executeExploringMap(bool initialize)
 
    planner_.setMap(currentMap_);
    frontiers_ = find_map_frontiers(currentMap_, currentPose_);
+    
+    pose_xyt_t p;
+    for (int i =0; i < 4; i++) {
+        p.theta = currentPose_.theta;
+        p.x = 0;
+        p.y = 0;
+        currentPath_.path.push_back(p);
+        p.x = 1;
+        p.y = 0;
+        currentPath_.path.push_back(p);    
+        p.x = 1;
+        p.y = 1;
+        currentPath_.path.push_back(p);
+        p.x = 0;
+        p.y = 1;
+        currentPath_.path.push_back(p);
+        p.x = 0;
+        p.y = 0;
+        currentPath_.path.push_back(p);
+    }
 
+    currentPath_.path_length = currentPath_.path.size();
+
+    /*
    std::cout << "Num frontiers: " << frontiers_.size() << "\n";
 
     for (auto pose : currentPath_.path) {
         std::cout << "Path X: " << pose.x << "\t Path Y: " << pose.y << "\n" ;
     }
 
-    /*
-   bool need_to_update_path = false;
-   // Check if current_path is not empty
-   if (!currentPath_.path.empty()) {
-       // then we want to check if that path is valid
-       if (planner_.isPathSafe(currentPath_)) {
-           // Then keep going on current path
-           // Don't need to update current path
-       } else { // current path was not safe, so need to update path
-        need_to_update_path = true;
-       }
-   } else { // current path was empty (maybe finished trajectory), so update path
-        need_to_update_path = true;<"
-   }
-   */
+
 
     //bool need_to_update_path = !planner_.isPathSafe(currentPath_);
     //bool need_to_update_path = true;
@@ -333,6 +342,7 @@ int8_t Exploration::executeExploringMap(bool initialize)
         std::cout << "Path X: " << pose.x << "\t Path Y: " << pose.y << "\n" ;
     }
 
+    */
     /////////////////////////////// End student code ///////////////////////////////
     
     /////////////////////////   Create the status message    //////////////////////////
