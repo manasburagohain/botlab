@@ -293,7 +293,7 @@ int8_t Exploration::executeExploringMap(bool initialize)
         float end_dist = (currentPose_.x - end_point.x)*(currentPose_.x - end_point.x) + (currentPose_.y - end_point.y)*(currentPose_.y - end_point.y);
         //if (sqrt(quarter_dist) < .1 || sqrt(half_dist) < .1 || sqrt(three_quarters_dist) < .1 || sqrt(end_dist) < .1 ) {
         // TO DO: CHECK AT INTERMEDIATE POINTS IF FINAL POINT IS VALID. IF NOT, CHECK IF CURRENT POINT IS VALID START POINT AND plan_path_to_frontiers
-        if (sqrt(end_dist) < .1 ) {
+        if (sqrt(end_dist) < .05 ) {
             need_to_update_path = true;
         } 
 
