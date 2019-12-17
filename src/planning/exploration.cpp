@@ -291,7 +291,8 @@ int8_t Exploration::executeExploringMap(bool initialize)
         float quarter_dist = (currentPose_.x - quarter_way.x)*(currentPose_.x - quarter_way.x) + (currentPose_.y - quarter_way.y)*(currentPose_.y - quarter_way.y);
         float three_quarters_dist = (currentPose_.x - three_quarters_way.x)*(currentPose_.x - three_quarters_way.x) + (currentPose_.y - three_quarters_way.y)*(currentPose_.y - three_quarters_way.y);
         float end_dist = (currentPose_.x - end_point.x)*(currentPose_.x - end_point.x) + (currentPose_.y - end_point.y)*(currentPose_.y - end_point.y);
-        if (sqrt(quarter_dist) < .1 || sqrt(half_dist) < .1 || sqrt(three_quarters_dist) < .1 || sqrt(end_dist) < .1 ) {
+        //if (sqrt(quarter_dist) < .1 || sqrt(half_dist) < .1 || sqrt(three_quarters_dist) < .1 || sqrt(end_dist) < .1 ) {
+        if (sqrt(half_dist) < .1 ) {
             need_to_update_path = true;
         } 
     } else {
