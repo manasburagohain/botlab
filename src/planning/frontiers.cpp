@@ -142,6 +142,7 @@ robot_path_t plan_path_to_frontier(const std::vector<frontier_t>& frontiers,
     float sq_len = .2; // .05;
     pose_xyt_t goal_pose;
     while (!foundPose) {
+        std::cout << "Looking for free spot to find path to!\n";
         // find the white point        //check top and bottom
         float top_height = closest_point.y + square_radius;
         float bot_height = closest_point.y - square_radius;
