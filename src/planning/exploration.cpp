@@ -298,6 +298,8 @@ int8_t Exploration::executeExploringMap(bool initialize)
             need_to_update_path = true;
     }
 
+    std::cout << "7\n";
+
 
    std::cout << "Need to update path: " << need_to_update_path << "\n";
 
