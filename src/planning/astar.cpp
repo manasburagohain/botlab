@@ -244,6 +244,9 @@ robot_path_t search_for_path(pose_xyt_t start,
 								gNew = node.gCost + 1.0;
 							hNew = calculateH(x + newX, y + newY, dest); //add Caluclate H
                             oNew = calculateO(x + newX, y + newY, distances, params);  //add Caluculate O
+							
+							std::cout << "O new: " << oNew << "\n";
+							
 							fNew = gNew + hNew + oNew; //add Obstacle Cost
 							// Check if this path is better than the one already present
 							if (allMap[x + newX][y + newY].fCost == FLT_MAX ||
@@ -318,7 +321,7 @@ static double calculateO(int x, int y, const ObstacleDistanceGrid& distances, co
     {
         ///<   pow(maxDistanceWithCost - cellDistance, distanceCostExponent)
         ///< for cellDistance > minDistanceToObstacle && cellDistance < maxDistanceWithCost
-		double cost = pow(params.maxDistanceWithCost - dist, params.distanceCostExponent + 3);
+		double cost = pow(params.maxDistanceWithCost - dist, params.distanceCostExponent);
 		std::cout << "O cost: " << cost << "\n";
 		return cost;
 
