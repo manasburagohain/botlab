@@ -296,6 +296,12 @@ int8_t Exploration::executeExploringMap(bool initialize)
         if (sqrt(end_dist) < .1 ) {
             need_to_update_path = true;
         } 
+
+        // Added this for Manas
+        if (!planner_.isPathSafe(currentPath_) && planner_.isValidGoal(currentPose_)) {
+            need_to_update_path = true;
+        }
+
     } else {
         need_to_update_path = true;
     }
