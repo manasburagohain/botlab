@@ -394,6 +394,7 @@ int8_t Exploration::executeReturningHome(bool initialize)
 
     /////////////////////////////// End student code ///////////////////////////////
     
+    
     /////////////////////////   Create the status message    //////////////////////////
     exploration_status_t status;
     status.utime = utime_now();
