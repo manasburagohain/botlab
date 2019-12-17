@@ -47,7 +47,7 @@ Exploration::Exploration(int32_t teamNumber,
     lcmInstance_->publish(EXPLORATION_STATUS_CHANNEL, &status);
     
     MotionPlannerParams params;
-    params.robotRadius = 0.05; //IS ACTUALLY .15, WE CHANGED TO .1
+    params.robotRadius = 0.1; //IS ACTUALLY .15, WE CHANGED TO .1
     planner_.setParams(params);
 }
 
@@ -282,7 +282,7 @@ int8_t Exploration::executeExploringMap(bool initialize)
     //bool need_to_update_path = !planner_.isPathSafe(currentPath_);
     //bool need_to_update_path = true;
     bool need_to_update_path = false;
-    if (!currentPath_.path.empty() && currentPath_.path_length > 2) {
+    if (!currentPath_.path.empty() && currentPath_.path_length > 4) {
         pose_xyt_t half_way = currentPath_.path.at(currentPath_.path_length / 2);
         pose_xyt_t quarter_way = currentPath_.path.at(currentPath_.path_length / 4);
         pose_xyt_t three_quarters_way =  currentPath_.path.at(currentPath_.path_length * 3 / 4);
