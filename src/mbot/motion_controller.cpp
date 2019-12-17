@@ -73,7 +73,7 @@ public:
 
         const float kPTurnGain = 4.0f; //0.4f;
         const float kDesiredSpeed = .4f; // 0.2f;
-        const float kMinSpeed = 0.1f;
+        const float kMinSpeed = 0.3f;
         const float kTurnSpeed = 3.0f; //1.0f;
         const float kTurnMaxSpeed = 0.6f;
         const float slowDownDistance = 0.4f;
@@ -111,7 +111,7 @@ public:
 
             if(state_ == TURN)
             {
-                if(std::abs(error) > 0.05) // turn in place until pointed approximately at the target
+                if(std::abs(error) > 0.30) //.05 // turn in place until pointed approximately at the target
                 {
 
                     cmd.trans_v = 0; //set translational velocity to 0
