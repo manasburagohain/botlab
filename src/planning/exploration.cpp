@@ -254,6 +254,7 @@ int8_t Exploration::executeExploringMap(bool initialize)
 
    // Update frontiers
 
+    lcmInstance_->handleTimeout(50);  // update at 20Hz minimum
     copyDataForUpdate();
 
    planner_.setMap(currentMap_);
@@ -394,7 +395,7 @@ int8_t Exploration::executeReturningHome(bool initialize)
 
     /////////////////////////////// End student code ///////////////////////////////
     
-    
+
     /////////////////////////   Create the status message    //////////////////////////
     exploration_status_t status;
     status.utime = utime_now();
