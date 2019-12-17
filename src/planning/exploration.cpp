@@ -231,6 +231,7 @@ int8_t Exploration::executeInitializing(void)
     currentPath_.path_length = 1;
     */
 
+   /*
     pose_xyt_t p;
     for (int i =0; i < 4; i++) {
         p.theta = currentPose_.theta;
@@ -265,6 +266,7 @@ int8_t Exploration::executeInitializing(void)
     }
 
     currentPath_.path_length = currentPath_.path.size();
+    */
 
     return exploration_status_t::STATE_EXPLORING_MAP;
 }
@@ -295,31 +297,12 @@ int8_t Exploration::executeExploringMap(bool initialize)
    planner_.setMap(currentMap_);
    frontiers_ = find_map_frontiers(currentMap_, currentPose_);
     
-    /*
-    pose_xyt_t p;
-    for (int i =0; i < 4; i++) {
-        p.theta = currentPose_.theta;
-        p.x = 0;
-        p.y = 0;
-        currentPath_.path.push_back(p);
-        p.x = 1;
-        p.y = 0;
-        currentPath_.path.push_back(p);    
-        p.x = 1;
-        p.y = 1;
-        currentPath_.path.push_back(p);
-        p.x = 0;
-        p.y = 1;
-        currentPath_.path.push_back(p);
-        p.x = 0;
-        p.y = 0;
-        currentPath_.path.push_back(p);
+    if (!haveHomePose_) {
+        homePose_ = currentPose_;
+        haveHomePose_ = true;
     }
 
-    currentPath_.path_length = currentPath_.path.size();
-    */
-
-    /*
+    //
    std::cout << "Num frontiers: " << frontiers_.size() << "\n";
 
     for (auto pose : currentPath_.path) {
@@ -379,7 +362,7 @@ int8_t Exploration::executeExploringMap(bool initialize)
         std::cout << "Path X: " << pose.x << "\t Path Y: " << pose.y << "\n" ;
     }
 
-    */
+    //
     /////////////////////////////// End student code ///////////////////////////////
     
     /////////////////////////   Create the status message    //////////////////////////
@@ -391,7 +374,7 @@ int8_t Exploration::executeExploringMap(bool initialize)
     // If no frontiers remain, then exploration is complete
     if(frontiers_.empty())
     {
-        //status.status = exploration_status_t::STATUS_COMPLETE;
+        status.status = exploration_status_t::STATUS_COMPLETE;
     }
     // Else if there's a path to follow, then we're still in the process of exploring
     else if(currentPath_.path.size() > 1)
@@ -438,7 +421,9 @@ int8_t Exploration::executeReturningHome(bool initialize)
     *       (2) currentPath_.path_length > 1  :  currently following a path to the home pose
     */
     
-
+   planner_.setMap(currentMap_);
+   
+   currentPath_ = planner_.planPath(currentPose_, homePose_);
 
     /////////////////////////////// End student code ///////////////////////////////
     
