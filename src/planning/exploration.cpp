@@ -226,6 +226,8 @@ int8_t Exploration::executeInitializing(void)
     
     lcmInstance_->publish(EXPLORATION_STATUS_CHANNEL, &status);
 
+    hasReturnHomePath_ = false;
+
     /* we added this
     currentPath_.path[0] = currentPose_;
     currentPath_.path_length = 1;
@@ -423,7 +425,10 @@ int8_t Exploration::executeReturningHome(bool initialize)
     
    planner_.setMap(currentMap_);
 
-   currentPath_ = planner_.planPath(currentPose_, homePose_);
+    if (!hasReturnHomePath_) {
+        currentPath_ = planner_.planPath(currentPose_, homePose_);
+        hasReturnHomePath_ = true;
+    }
 
     /////////////////////////////// End student code ///////////////////////////////
     
