@@ -225,7 +225,12 @@ int8_t Exploration::executeInitializing(void)
     status.status = exploration_status_t::STATUS_COMPLETE;
     
     lcmInstance_->publish(EXPLORATION_STATUS_CHANNEL, &status);
-    
+
+    /* we added this
+    currentPath_.path[0] = currentPose_;
+    currentPath_.path_length = 1;
+    */
+
     return exploration_status_t::STATE_EXPLORING_MAP;
 }
 
@@ -270,21 +275,27 @@ int8_t Exploration::executeExploringMap(bool initialize)
         need_to_update_path = true;
        }
    } else { // current path was empty (maybe finished trajectory), so update path
-        need_to_update_path = true;
+        need_to_update_path = true;<"
    }
    */
 
     //bool need_to_update_path = !planner_.isPathSafe(currentPath_);
     //bool need_to_update_path = true;
+    std::cout << "1\n";
     bool need_to_update_path = false;
-        if (currentPath_.path_length > 0) {
+    std::cout << "2\n";
+    if (!currentPath_.path.empty()) {
+        std::cout << "3\n";
         pose_xyt_t half_way = currentPath_.path.at(currentPath_.path_length / 2);
+        std::cout << "4\n";
         float dist = (currentPose_.x - half_way.x)*(currentPose_.x - half_way.x) + (currentPose_.y - half_way.y)*(currentPose_.y - half_way.y);
+        std::cout << "5\n";
         if (sqrt(dist) < .1) {
+            std::cout << "6\n";
             need_to_update_path = true;
-        } else {
+        } 
+    } else {
             need_to_update_path = true;
-        }
     }
 
 
@@ -329,7 +340,7 @@ int8_t Exploration::executeExploringMap(bool initialize)
     // If no frontiers remain, then exploration is complete
     if(frontiers_.empty())
     {
-        status.status = exploration_status_t::STATUS_COMPLETE;
+        //status.status = exploration_status_t::STATUS_COMPLETE;
     }
     // Else if there's a path to follow, then we're still in the process of exploring
     else if(currentPath_.path.size() > 1)
