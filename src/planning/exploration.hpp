@@ -12,6 +12,7 @@
 #include <lcm/lcm-cpp.hpp>
 #include <mutex>
 #include <set>
+#include <grid_utils.hpp>
 
 /**
 * Exploration runs a simple state machine to explore -- and possibly escape from -- an environment. The state machine
@@ -124,7 +125,7 @@ private:
     int8_t executeFailed(bool initialize);
     
     /////////// TODO: Add any additional methods you might need here //////////////
-    
+    bool isValid(int x, int y);
     /////////////////////////// End student code ///////////////////////////////
 };
 

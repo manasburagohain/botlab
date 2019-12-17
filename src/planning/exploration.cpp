@@ -292,6 +292,7 @@ int8_t Exploration::executeExploringMap(bool initialize)
         float three_quarters_dist = (currentPose_.x - three_quarters_way.x)*(currentPose_.x - three_quarters_way.x) + (currentPose_.y - three_quarters_way.y)*(currentPose_.y - three_quarters_way.y);
         float end_dist = (currentPose_.x - end_point.x)*(currentPose_.x - end_point.x) + (currentPose_.y - end_point.y)*(currentPose_.y - end_point.y);
         //if (sqrt(quarter_dist) < .1 || sqrt(half_dist) < .1 || sqrt(three_quarters_dist) < .1 || sqrt(end_dist) < .1 ) {
+        // TO DO: CHECK AT INTERMEDIATE POINTS IF FINAL POINT IS VALID. IF NOT, CHECK IF CURRENT POINT IS VALID START POINT AND plan_path_to_frontiers
         if (sqrt(end_dist) < .1 ) {
             need_to_update_path = true;
         } 
@@ -307,6 +308,11 @@ int8_t Exploration::executeExploringMap(bool initialize)
     // If we need to update path, use function to get path from frontiers
     if (need_to_update_path) {
         robot_path_t prev_path = currentPath_; 
+        // pose_xyt_t FinalPoint = currentPath_.path[currentPath_.path_length-1];
+        // Point<int> FinalCell = global_position_to_grid_cell(FinalPoint, currentMap_);
+        // if (!isValid(FinalCell.x, FinalCell.y))
+        //     currentPath_.path.
+        // else
         currentPath_ = plan_path_to_frontier(frontiers_, currentPose_, currentMap_, planner_);
         currentPath_.path_length = currentPath_.path.size();
         if (currentPath_.path.empty()) {
@@ -444,4 +450,20 @@ int8_t Exploration::executeFailed(bool initialize)
     lcmInstance_->publish(EXPLORATION_STATUS_CHANNEL, &msg);
     
     return exploration_status_t::STATE_FAILED_EXPLORATION;
+}
+
+bool Exploration::isValid(int x, int y) 
+{ //If our Node is an obstacle it is not valid
+	//printf("%d,%d: %f, %f\n", x,y,distances.operator()(x,y), minDist);
+
+	if (planner_.obstacleDistances().operator()(x,y) >  0.2*1.000001) //USE ROBOT RADIUS 
+	{
+		//printf("%f\n", minDist * distances.cellsPerMeter());
+		if (x < 0 || y < 0 || x >= (planner_.obstacleDistances().widthInCells()) || y >= (planner_.obstacleDistances().heightInCells())) {
+            return false;
+        }
+        return true;
+    } 
+	//printf("%d,%d: %f\n", x,y,distances.operator()(x,y));
+    return false;
 }
