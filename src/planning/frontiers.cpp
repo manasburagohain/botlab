@@ -152,7 +152,7 @@ robot_path_t plan_path_to_frontier(const std::vector<frontier_t>& frontiers,
         for (float i = -square_radius; i <= square_radius; i+=sq_len ) {
             bool valid_point_top = check_valid(planner, closest_point.x + i, top_height, robotPose); // absolute x, absolute y
             bool valid_point_bot = check_valid(planner, closest_point.x + i, bot_height, robotPose);
-
+            /*
             Point<double> check_top;
             check_top.x = closest_point.x + i;
             check_top.y = top_height;
@@ -161,7 +161,7 @@ robot_path_t plan_path_to_frontier(const std::vector<frontier_t>& frontiers,
             check_bot.x = closest_point.x + i;
             check_bot.y = bot_height;
             printf("Check bot X: %d, Y: %d\n", global_position_to_grid_cell(check_bot, map).x, global_position_to_grid_cell(check_bot, map).y);
-            
+            */
             if (valid_point_top) {
                 foundPose = true;
                 goal_pose.x = closest_point.x + i;
@@ -177,7 +177,7 @@ robot_path_t plan_path_to_frontier(const std::vector<frontier_t>& frontiers,
         for (float i = -square_radius; i <= square_radius; i+=sq_len ) {
             bool valid_point_right = check_valid(planner, right_bound, closest_point.y + i, robotPose);
             bool valid_point_left  = check_valid(planner, left_bound, closest_point.y + i, robotPose);
-
+            /*
             Point<double> check_left;
             check_left.x = left_bound;
             check_left.y = closest_point.y + i;
@@ -186,7 +186,7 @@ robot_path_t plan_path_to_frontier(const std::vector<frontier_t>& frontiers,
             check_right.x = right_bound;
             check_right.y = closest_point.y + i;
             printf("Check right X: %d, Y: %d\n", global_position_to_grid_cell(check_right, map).x, global_position_to_grid_cell(check_right, map).y);
-            
+            */
             if (valid_point_right) {
                 foundPose = true;
                 goal_pose.x = right_bound;
@@ -196,7 +196,11 @@ robot_path_t plan_path_to_frontier(const std::vector<frontier_t>& frontiers,
                 goal_pose.x = left_bound;
                 goal_pose.y = closest_point.y + i;
             }
-        }        square_radius+=sq_len;
+        }        
+        if (square_radius < 0.5)    
+            square_radius += sq_len;
+        else 
+            square_radius = 0.05;
     }    /*
     pose_xyt_t goal_pose;
     goal_pose.x = closest_point.x;
