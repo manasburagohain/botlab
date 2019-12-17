@@ -284,15 +284,19 @@ int8_t Exploration::executeExploringMap(bool initialize)
     bool need_to_update_path = false;
     if (!currentPath_.path.empty()) {
         pose_xyt_t half_way = currentPath_.path.at(currentPath_.path_length / 2);
-        float dist = (currentPose_.x - half_way.x)*(currentPose_.x - half_way.x) + (currentPose_.y - half_way.y)*(currentPose_.y - half_way.y);
-        if (sqrt(dist) < .1) {
+        pose_xyt_t quarter_way = currentPath_.path.at(currentPath_.path_length / 4);
+        pose_xyt_t three_quarters_way =  currentPath_.path.at(currentPath_.path_length * 3 / 4);
+        pose_xyt_t end_point = currentPath_.path.at(currentPath_.path_length - 1);
+        float half_dist = (currentPose_.x - half_way.x)*(currentPose_.x - half_way.x) + (currentPose_.y - half_way.y)*(currentPose_.y - half_way.y);
+        float quarter_dist = (currentPose_.x - quarter_way.x)*(currentPose_.x - quarter_way.x) + (currentPose_.y - quarter_way.y)*(currentPose_.y - quarter_way.y);
+        float three_quarters_dist = (currentPose_.x - three_quarters_way.x)*(currentPose_.x - three_quarters_way.x) + (currentPose_.y - three_quarters_way.y)*(currentPose_.y - three_quarters_way.y);
+        float end_dist = (currentPose_.x - end_point.x)*(currentPose_.x - end_point.x) + (currentPose_.y - end_point.y)*(currentPose_.y - end_point.y);
+        if (sqrt(quarter_dist) < .1 || sqrt(half_dist) < .1 || sqrt(three_quarters_dist) < .1 || sqrt(end_dist) < .1 ) {
             need_to_update_path = true;
         } 
     } else {
-            need_to_update_path = true;
+        need_to_update_path = true;
     }
-
-    std::cout << "7\n";
 
 
    std::cout << "Need to update path: " << need_to_update_path << "\n";
