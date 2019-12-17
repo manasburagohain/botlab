@@ -67,32 +67,38 @@ public:
     {
         //////////// TODO: Implement your feedback controller here. //////////////////////
         
-        const float kPGain = 0.27f; //0.27f;
+        const float kPGain = 0.15f; //0.27f;
         const float kDGain = 0.0f;
-        const float kIGain = 0.0003f;
+        const float kIGain = 0.00045f;
 
-        const float kPTurnGain = 4.0f; //0.4f;
-        const float kDesiredSpeed = .4f; // 0.2f;
-        const float kMinSpeed = 0.3f;
-        const float kTurnSpeed = 3.0f; //1.0f;
-        const float kTurnMaxSpeed = 0.6f;
+        const float kPTurnGain = 6.0f; //6.0f; //0.4f; // was 5, working well
+        const float kDesiredSpeed = 0.2f; // 0.2f; // was .4, working well
+        const float kMinSpeed = 0.1f;
+        const float kTurnSpeed = 2.0f; //1.0f; // was 3, working well, 2 also working well
+        const float kTurnMaxSpeed = 0.50f; //  we only use this for maintaining heading
         const float slowDownDistance = 0.4f;
         
         mbot_motor_command_t cmd;
 
         cmd.trans_v = 0.0f;
-        cmd.angular_v = 0.0f;
+        cmd.angular_v = kTurnSpeed / 2.25;  //0.0f; //1.5 worked pretty well
 
         cmd.utime = now();
         
         if(haveReachedTarget())
         {
 		std::cout << "TARGET REACHED\n";
-            bool haveTarget = assignNextTarget();
+            	bool haveTarget = assignNextTarget();
+		// we just added these two lines to make it turn after completing path
+                // cmd.angular_v = kTurnMaxSpeed / 4;
+                // return cmd;
             
             if(!haveTarget)
             {
                 std::cout << "COMPLETED PATH!\n";
+		// we just added these two lines to make it turn after completing path
+		//cmd.angular_v = kTurnSpeed;
+		//return cmd;
             }
         }
         
@@ -111,7 +117,7 @@ public:
 
             if(state_ == TURN)
             {
-                if(std::abs(error) > 0.30) //.05 // turn in place until pointed approximately at the target
+                if(std::abs(error) > 0.50) //.30 was working well  //.05 // turn in place until pointed approximately at the target
                 {
 
                     cmd.trans_v = 0; //set translational velocity to 0
@@ -123,6 +129,7 @@ public:
                         turnspeed = -kTurnSpeed;
                     }
 
+		    /*
                     if (std::abs(error) < 0.5) {
                         // kick in PID close to end
                         double deltaError = error - lastError_;
@@ -136,6 +143,7 @@ public:
                             turnspeed = std::max(turnspeed, -kTurnMaxSpeed);
                         }
                     }
+                    */
 
                     // Turn left if the target is to the left
                     if(error > 0.0)
