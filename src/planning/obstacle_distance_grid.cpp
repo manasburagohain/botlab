@@ -38,6 +38,8 @@ void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
                     if (dist > fabs(obs[k][0] - i) + fabs(obs[k][1] - j) + (1.414 - 2) * min(fabs(obs[k][0] - i), fabs(obs[k][1] - j)))
                     {
                         dist = fabs(obs[k][0] - i) + fabs(obs[k][1] - j) + (1.414 - 2) * min(fabs(obs[k][0] - i), fabs(obs[k][1] - j));
+
+                        dist = 0.8 * dist;
                         //if(i == 2 && j == 2)
                         //printf("%d,%d,%d,%d\n",map.logOdds(i,j),obs[k][0],obs[k][1],dist);
                     }
