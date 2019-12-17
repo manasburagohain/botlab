@@ -308,7 +308,7 @@ static double calculateO(int x, int y, const ObstacleDistanceGrid& distances, co
     {
         ///<   pow(maxDistanceWithCost - cellDistance, distanceCostExponent)
         ///< for cellDistance > minDistanceToObstacle && cellDistance < maxDistanceWithCost
-        return    pow(params.maxDistanceWithCost - dist, params.distanceCostExponent+1);
+        return    pow(params.maxDistanceWithCost - dist, params.distanceCostExponent);
     }
     return 0.0;
 }
