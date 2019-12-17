@@ -32,14 +32,14 @@ robot_path_t search_for_path(pose_xyt_t start,
 		path.path_length = path.path.size();
 		return path;
     }  
-	/*
+	
 	if (!isValid(startnode.x, startnode.y, distances, params.minDistanceToObstacle))
     {
 		printf("Origin is invalid\n");
 		path.path_length = path.path.size();
 		return path;
     } 
-	*/     
+	     
 	if(isDestination(startnode.x, startnode.y, dest))
     {
         printf("Already at Destination\n");
