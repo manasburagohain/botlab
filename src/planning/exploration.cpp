@@ -281,17 +281,11 @@ int8_t Exploration::executeExploringMap(bool initialize)
 
     //bool need_to_update_path = !planner_.isPathSafe(currentPath_);
     //bool need_to_update_path = true;
-    std::cout << "1\n";
     bool need_to_update_path = false;
-    std::cout << "2\n";
     if (!currentPath_.path.empty()) {
-        std::cout << "3\n";
         pose_xyt_t half_way = currentPath_.path.at(currentPath_.path_length / 2);
-        std::cout << "4\n";
         float dist = (currentPose_.x - half_way.x)*(currentPose_.x - half_way.x) + (currentPose_.y - half_way.y)*(currentPose_.y - half_way.y);
-        std::cout << "5\n";
         if (sqrt(dist) < .1) {
-            std::cout << "6\n";
             need_to_update_path = true;
         } 
     } else {
@@ -307,24 +301,12 @@ int8_t Exploration::executeExploringMap(bool initialize)
 
     // If we need to update path, use function to get path from frontiers
     if (need_to_update_path) {
+        robot_path_t prev_path = currentPath_; 
         currentPath_ = plan_path_to_frontier(frontiers_, currentPose_, currentMap_, planner_);
         currentPath_.path_length = currentPath_.path.size();
-        /*
         if (currentPath_.path.empty()) {
-            std::cout << "Here -1\n";
-            std::cout << "Path Length: " << currentPath_.path_length << "\n";
-            std::vector<pose_xyt_t> temp_vec;
-            temp_vec.push_back(currentPose_);
-            currentPath_.path = temp_vec;
+            currentPath_ = prev_path;
         }
-
-
-        pose_xyt_t new_pose = currentPath_.path.at(currentPath_.path_length - 1);//-1);
-        new_pose.x += .5;
-        new_pose.y += .5;
-        currentPath_.path.push_back(new_pose);
-        currentPath_.path_length += 1;
-        */
     }
     
     for (auto pose : currentPath_.path) {
