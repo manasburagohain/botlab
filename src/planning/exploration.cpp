@@ -254,6 +254,8 @@ int8_t Exploration::executeExploringMap(bool initialize)
 
    // Update frontiers
 
+    copyDataForUpdate();
+
    planner_.setMap(currentMap_);
    frontiers_ = find_map_frontiers(currentMap_, currentPose_);
 
