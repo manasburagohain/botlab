@@ -458,6 +458,7 @@ int8_t Exploration::executeFailed(bool initialize)
     return exploration_status_t::STATE_FAILED_EXPLORATION;
 }
 
+/*
 bool Exploration::isValid(int x, int y) 
 { //If our Node is an obstacle it is not valid
 	//printf("%d,%d: %f, %f\n", x,y,distances.operator()(x,y), minDist);
@@ -473,3 +474,4 @@ bool Exploration::isValid(int x, int y)
 	//printf("%d,%d: %f\n", x,y,distances.operator()(x,y));
     return false;
 }
+*/
