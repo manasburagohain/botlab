@@ -315,13 +315,13 @@ static double calculateH(int x, int y, Node dest)
 
 static double calculateO(int x, int y, const ObstacleDistanceGrid& distances, const SearchParams& params) 
 {
-    int dist = distances(x,y);
+    double dist = distances(x,y);
     if (dist >= params.maxDistanceWithCost)    return 0;
     else
     {
         ///<   pow(maxDistanceWithCost - cellDistance, distanceCostExponent)
         ///< for cellDistance > minDistanceToObstacle && cellDistance < maxDistanceWithCost
-		double cost = pow(params.maxDistanceWithCost - dist, params.distanceCostExponent);
+		double cost = pow((params.maxDistanceWithCost - dist)*20, params.distanceCostExponent);
 		std::cout << "O cost: " << cost << "\n";
 		return cost;
 
