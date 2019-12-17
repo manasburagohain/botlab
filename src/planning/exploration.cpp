@@ -259,7 +259,7 @@ int8_t Exploration::executeInitializing(void)
         }
     }
     p.x = 0;
-    p.y = 0;
+    p.y = -.05;
     for (int i = 0; i < 5; i++){
         currentPath_.path.push_back(p);
     }
