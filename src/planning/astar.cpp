@@ -191,7 +191,7 @@ robot_path_t search_for_path(pose_xyt_t start,
 							usablePath.path_length = usablePath.path.size();
 
 							for(int i = 0 ; i<usablePath.path_length; i++)
-								printf("X: %f, Y: %f\n", usablePath.path[i].x, finalPath.path[i].y);
+								printf("X: %f, Y: %f\n", usablePath.path[i].x, usablePath.path[i].y);
 							return usablePath;
 							/*
 							// delete points on the same line
