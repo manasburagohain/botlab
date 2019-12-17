@@ -83,6 +83,11 @@ bool MotionPlanner::isPathSafe(const robot_path_t& path) const
 
     //setPrevGoal(path.path[0]);
 
+    // Just added this to make short paths impossible
+    if (path.path_length < 4) {
+        return false;
+    }
+
     for (int i = 0; i < path.path.size(); i+=stride) {
         pose_xyt_t pose = path.path.at(i);
 
