@@ -59,10 +59,10 @@ bool ActionModel::updateAction(const pose_xyt_t& odometry)
     var[2] = alpha1*delta_rot2*delta_rot2 + alpha2*delta_trans*delta_trans;
     */
 
-    // ALL THESE .05 FOR COMPETITION
-    var[0] = .01; // .1 WORKS FOR LOCALIZATION ONLY
-    var[1] = .01;
-    var[2] = .01;
+    // ALL THESE .05 FOR COMPETITION, .01 for low spread for report
+    var[0] = .07; // .1 WORKS FOR LOCALIZATION ONLY
+    var[1] = .07;
+    var[2] = .07;
     //
 
 

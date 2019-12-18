@@ -8,6 +8,16 @@
 
 #include <common/grid_utils.hpp>
 
+//
+#include <sys/time.h>
+
+int64_t utime_now (void){
+    struct timeval tv;
+    gettimeofday (&tv, NULL);
+    return (int64_t) tv.tv_sec * 1000000 + tv.tv_usec;
+}
+//
+
 ParticleFilter::ParticleFilter(int numParticles)
 : kNumParticles_ (numParticles)
 {
@@ -38,7 +48,7 @@ double ParticleFilter::my_rand(double min, double max) {
 void ParticleFilter::initializeFilterAtPose(const pose_xyt_t& pose)
 {
     std::cout << "X: " << pose.x << " Y: " << pose.y << "\n";
-
+    /*
     for (int i=0;i<30;i++) {
         for (int j=0; j<30; j++) {
             pose_xyt_t temp_pose;
@@ -56,9 +66,9 @@ void ParticleFilter::initializeFilterAtPose(const pose_xyt_t& pose)
     actionModel_.pre_odometry.x = 2.5;
     actionModel_.pre_odometry.y = 2.5;
     actionModel_.pre_odometry.theta = pose.theta;
+    */
 
-
-    /*   
+       
     ///////////// TODO: Implement your method for initializing the particles in the particle filter /////////////////
 
     //for i in kNumParticles, initialize particle to start pose // no need to adjust by epsilon, done in action model
@@ -77,8 +87,10 @@ void ParticleFilter::initializeFilterAtPose(const pose_xyt_t& pose)
     printf("Initialized particle filter to pose\n");
     // to-do try printing pose for next time
 
+    /*
+    total_time = 0;
+    num_times = 0;
     */
-    
 }
 
 
@@ -86,16 +98,18 @@ pose_xyt_t ParticleFilter::updateFilter(const pose_xyt_t&      odometry,
                                         const lidar_t& laser,
                                         const OccupancyGrid&   map)
 {
-    printf("Made it into update filter\n");
+    uint64_t start_time = utime_now();
+
+    //printf("Made it into update filter\n");
     // Only update the particles if motion was detected. If the robot didn't move, then
     // obviously don't do anything.
     bool hasRobotMoved = actionModel_.updateAction(odometry);
     
-    printf("Updated action model if robot moved\n");
+    //printf("Updated action model if robot moved\n");
 
     if(hasRobotMoved)
     {
-        printf("checked if robot has moved\n");
+        //printf("checked if robot has moved\n");
         auto prior = resamplePosteriorDistribution(); // this just resamples. done
     
         auto proposal = computeProposalDistribution(prior); // this applies action model. done.
@@ -104,21 +118,39 @@ pose_xyt_t ParticleFilter::updateFilter(const pose_xyt_t&      odometry,
             printf("proposal w:%f\n", p.weight);
         }
         */
-        printf("computed proposal\n");
+       // printf("computed proposal\n");
         posterior_ = computeNormalizedPosterior(proposal, laser, map); // this uses likelihood sensor model and normalizes.
         /*
         for (auto p : posterior_) {
             printf("posterior w:%f\n", p.weight);
         } 
         */
-        printf("computed posterior\n");
+        //printf("computed posterior\n");
         posteriorPose_ = estimatePosteriorPose(posterior_); // from all samples and weights, get pose estimate
-        printf("estimated new pose\n");
+       // printf("estimated new pose\n");
     }
     
     posteriorPose_.utime = odometry.utime;
-    
+
+    uint64_t time_elapsed = utime_now() - start_time;
+    /*
+    if (!num_times_init) {
+        num_times_init = true;
+        num_times = 1;
+        total_time = 1;
+    }
+
+    total_time += time_elapsed;
+
+    num_times++;
+    */
+
+    //std::cout << "Avg Time of one filter update in microsec: " << total_time / num_times << "\n";
+    std::cout << time_elapsed << "\n";
+
+
     return posteriorPose_;
+
 }
 
 

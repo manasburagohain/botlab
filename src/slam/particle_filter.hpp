@@ -93,6 +93,10 @@ private:
     //void applyEpsilon(float epsilon)
     double my_rand(double min, double max);
 
+    long int total_time;
+    long int num_times;
+    bool num_times_init;
+
 };
 
 #endif // SLAM_PARTICLE_FILTER_HPP

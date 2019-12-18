@@ -233,7 +233,7 @@ int8_t Exploration::executeInitializing(void)
     currentPath_.path_length = 1;
     */
 
-   /*
+   
     pose_xyt_t p;
     for (int i =0; i < 4; i++) {
         p.theta = currentPose_.theta;
@@ -268,7 +268,7 @@ int8_t Exploration::executeInitializing(void)
     }
 
     currentPath_.path_length = currentPath_.path.size();
-    */
+    
 
     return exploration_status_t::STATE_EXPLORING_MAP;
 }
@@ -298,7 +298,7 @@ int8_t Exploration::executeExploringMap(bool initialize)
 
    planner_.setMap(currentMap_);
    frontiers_ = find_map_frontiers(currentMap_, currentPose_);
-    
+    /*from here
     if (!haveHomePose_) {
         homePose_ = currentPose_;
         haveHomePose_ = true;
@@ -364,7 +364,8 @@ int8_t Exploration::executeExploringMap(bool initialize)
         std::cout << "Path X: " << pose.x << "\t Path Y: " << pose.y << "\n" ;
     }
 
-    //
+    */
+   //to here
     /////////////////////////////// End student code ///////////////////////////////
     
     /////////////////////////   Create the status message    //////////////////////////
