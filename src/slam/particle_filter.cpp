@@ -37,21 +37,33 @@ double ParticleFilter::my_rand(double min, double max) {
 
 void ParticleFilter::initializeFilterAtPose(const pose_xyt_t& pose)
 {
+    std::cout << "X: " << pose.x << " Y: " << pose.y << "\n";
+
+    for (int i=0;i<30;i++) {
+        for (int j=0; j<30; j++) {
+            pose_xyt_t temp_pose;
+            //temp_pose.x = -4.9 + (10.0/30.0)*j;
+            //temp_pose.y = -4.9 + (10.0/30.0)*i;
+            temp_pose.x = -2.5 + (5.0/30.0)*j; 
+            temp_pose.y = -2.5 + (5.0/30.0)*i;
+            posterior_[i*30+j].pose = temp_pose;
+            posterior_[i*30+j].weight = 1.0 / kNumParticles_;
+            posterior_[i*30+j].parent_pose = temp_pose;
+
+        }
+    }
+    /*   
     ///////////// TODO: Implement your method for initializing the particles in the particle filter /////////////////
 
     //for i in kNumParticles, initialize particle to start pose // no need to adjust by epsilon, done in action model
     for (int i = 0; i < kNumParticles_; i++) {
-
-        /*
-        Point<double> pose_m = Point<double>(posterior_[i].pose.x,posterior_[i].pose.y);
-        Point<int> pose_grid = global_position_to_grid_cell(pose_m, map);
-        */
 
         //set particle pose to initial pose
         posterior_[i].pose = pose;
         posterior_[i].weight = 1.0 / kNumParticles_;
         posterior_[i].parent_pose = pose;  
     }
+    */
 
     actionModel_.pre_odometry.x = pose.x;
     actionModel_.pre_odometry.y = pose.y;
@@ -59,6 +71,7 @@ void ParticleFilter::initializeFilterAtPose(const pose_xyt_t& pose)
 
     printf("Initialized particle filter to pose\n");
     // to-do try printing pose for next time
+    
 }
 
 
