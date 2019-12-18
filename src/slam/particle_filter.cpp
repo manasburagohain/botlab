@@ -45,13 +45,19 @@ void ParticleFilter::initializeFilterAtPose(const pose_xyt_t& pose)
             //temp_pose.x = -4.9 + (10.0/30.0)*j;
             //temp_pose.y = -4.9 + (10.0/30.0)*i;
             temp_pose.x = -2.5 + (5.0/30.0)*j; 
-            temp_pose.y = -2.5 + (5.0/30.0)*i;
+            temp_pose.y = -1.5 + (5.0/30.0)*i;
             posterior_[i*30+j].pose = temp_pose;
             posterior_[i*30+j].weight = 1.0 / kNumParticles_;
             posterior_[i*30+j].parent_pose = temp_pose;
 
         }
     }
+
+    actionModel_.pre_odometry.x = 2.5;
+    actionModel_.pre_odometry.y = 2.5;
+    actionModel_.pre_odometry.theta = pose.theta;
+
+
     /*   
     ///////////// TODO: Implement your method for initializing the particles in the particle filter /////////////////
 
@@ -63,7 +69,6 @@ void ParticleFilter::initializeFilterAtPose(const pose_xyt_t& pose)
         posterior_[i].weight = 1.0 / kNumParticles_;
         posterior_[i].parent_pose = pose;  
     }
-    */
 
     actionModel_.pre_odometry.x = pose.x;
     actionModel_.pre_odometry.y = pose.y;
@@ -71,6 +76,8 @@ void ParticleFilter::initializeFilterAtPose(const pose_xyt_t& pose)
 
     printf("Initialized particle filter to pose\n");
     // to-do try printing pose for next time
+
+    */
     
 }
 

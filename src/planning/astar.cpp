@@ -46,7 +46,7 @@ robot_path_t search_for_path(pose_xyt_t start,
 		path.path_length = path.path.size();
         return path;
     }
-	printf("\n1");
+	//printf("\n1");
 	
 	if(!isCellInGrid(dest.x, dest.y, distances) || !isCellInGrid(startnode.x, startnode.y, distances))
 	{
@@ -55,12 +55,12 @@ robot_path_t search_for_path(pose_xyt_t start,
         return path;
 	}
 	// else	
-	 	printf("\n2");
+	 	//printf("\n2");
 	// printf("\n3");
 	// printf("\n4");
 	bool closedList[distances.widthInCells()][distances.heightInCells()];
     
-	cout << "\n3";
+	//cout << "\n3";
     for (int x = 0; x < (distances.widthInCells()); x++) 
     {
 		vector<Node> suptemp;
@@ -78,7 +78,7 @@ robot_path_t search_for_path(pose_xyt_t start,
 		}
 		allMap.push_back(suptemp);
 	}
-	cout << "\n4";
+	//cout << "\n4";
     int x = startnode.x;
 	int y = startnode.y;
 	allMap[x][y].fCost = 0.0;
@@ -89,7 +89,7 @@ robot_path_t search_for_path(pose_xyt_t start,
     vector<Node> openList;	
 	openList.emplace_back(allMap[x][y]);
 	bool destinationFound = false;
-	cout << "\n5";
+	//cout << "\n5";
 
     while (!openList.empty()&&openList.size()<(distances.widthInCells())*(distances.heightInCells())) 
     {
@@ -164,9 +164,9 @@ robot_path_t search_for_path(pose_xyt_t start,
 								tempnode.y = static_cast<float>((allMap[x][y].y) * distances.metersPerCell() + distances.originInGlobalFrame().y);
 								path.push(tempnode);
 
-								std::cout << "F cost: " << allMap[x][y].fCost << "\n";
-								std::cout << "O cost: " << allMap[x][y].oCost << "\n";
-								std::cout << "H cost: " << allMap[x][y].hCost << "\n";
+								// std::cout << "F cost: " << allMap[x][y].fCost << "\n";
+								// std::cout << "O cost: " << allMap[x][y].oCost << "\n";
+								// std::cout << "H cost: " << allMap[x][y].hCost << "\n";
 
 
 								int tempX = allMap[x][y].parentX;
@@ -196,8 +196,8 @@ robot_path_t search_for_path(pose_xyt_t start,
 							}
 							usablePath.path_length = usablePath.path.size();
 
-							for(int i = 0 ; i<usablePath.path_length; i++)
-								printf("X: %f, Y: %f\n", usablePath.path[i].x, usablePath.path[i].y);
+							// for(int i = 0 ; i<usablePath.path_length; i++)
+							// 	printf("X: %f, Y: %f\n", usablePath.path[i].x, usablePath.path[i].y);
 							return usablePath;
 							/*
 							// delete points on the same line
@@ -245,7 +245,7 @@ robot_path_t search_for_path(pose_xyt_t start,
 							hNew = calculateH(x + newX, y + newY, dest); //add Caluclate H
                             oNew = calculateO(x + newX, y + newY, distances, params);  //add Caluculate O
 							
-							std::cout << "O new: " << oNew << "\n";
+							//std::cout << "O new: " << oNew << "\n";
 							
 							fNew = gNew + hNew + oNew; //add Obstacle Cost
 							// Check if this path is better than the one already present
@@ -321,8 +321,8 @@ static double calculateO(int x, int y, const ObstacleDistanceGrid& distances, co
     {
         ///<   pow(maxDistanceWithCost - cellDistance, distanceCostExponent)
         ///< for cellDistance > minDistanceToObstacle && cellDistance < maxDistanceWithCost
-		double cost = pow((params.maxDistanceWithCost - dist)*200.0, params.distanceCostExponent); // 20 a little low
-		std::cout << "O cost: " << cost << "\n";
+		double cost = pow((params.maxDistanceWithCost - dist), params.distanceCostExponent); //200 for exploration // 20 a little low
+		//std::cout << "O cost: " << cost << "\n";
 		return cost;
 
         //return    pow(params.maxDistanceWithCost - dist, params.distanceCostExponent + 3); // added +1 
