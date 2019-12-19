@@ -60,9 +60,9 @@ bool ActionModel::updateAction(const pose_xyt_t& odometry)
     */
 
     // ALL THESE .05 FOR COMPETITION, .01 for low spread for report
-    var[0] = .03; // .1 WORKS FOR LOCALIZATION ONLY
-    var[1] = .03;
-    var[2] = .03;
+    var[0] = .05; // .1 WORKS FOR LOCALIZATION ONLY
+    var[1] = .05;
+    var[2] = .05;
     //
 
 
