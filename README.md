@@ -71,7 +71,7 @@ A project for ROB 550: Robotics Systems Lab course taught in University of Michi
     - `./slam`
     - `./exploration` 
 
-Check the [final report](https://github.com/manasburagohain/botLab/blob/master/report/botlab.pdf) for detailed explanation and results.
+Check the [final report](https://github.com/manasburagohain/botlab/blob/master/report/botlab.pdf) for detailed explanation and results.
 
 ## Directories 
 
